@@ -9,13 +9,14 @@
 <body>
 
 <div class="stage">
-  <div class="speech-bubble" id="bubble"></div>
+  <div class="speech-bubble" id="bubble">
+    <span id="bubble-text"></span>
+    <span class="bubble-tail-fill-1"></span>
+    <span class="bubble-tail-fill-2"></span>
+  </div>
 
   <div class="mochi" id="mochi">
-    <img src="../assets/mochi-base.png" alt="Mochi">
-
-    <div class="blink-overlay left"><span></span></div>
-    <div class="blink-overlay right"><span></span></div>
+    <img src="../assets/mochi-base.svg" alt="Mochi">
 
     <!-- emotion props: hidden until mochi.js adds "show" -->
     <div class="prop" data-prop="heart">

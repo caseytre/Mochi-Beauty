@@ -1,22 +1,10 @@
-/* Mochi rig: idle blink loop, swappable emotion props, and an
-   Animal-Crossing-style "Animalese" speech bubble (typed-on text +
-   synthesized pitch-blip per character, no audio files needed). */
+/* Mochi rig: swappable emotion props, and an Animal-Crossing-style
+   "Animalese" speech bubble (typed-on text + synthesized pitch-blip per
+   character, no audio files needed). */
 
 const mochi = document.getElementById('mochi');
 const bubble = document.getElementById('bubble');
-
-/* ---------------- Blink loop ---------------- */
-function scheduleBlink() {
-  const delay = 2200 + Math.random() * 2600; // irregular, feels alive
-  setTimeout(() => {
-    mochi.classList.add('blinking');
-    setTimeout(() => {
-      mochi.classList.remove('blinking');
-      scheduleBlink();
-    }, 110);
-  }, delay);
-}
-scheduleBlink();
+const bubbleText = document.getElementById('bubble-text');
 
 /* ---------------- Emotion props ---------------- */
 function showProp(name) {
@@ -48,7 +36,7 @@ function beep(freq, duration) {
 let typeToken = 0;
 function say(text, { charDelay = 35, baseFreq = 340 } = {}) {
   const myToken = ++typeToken;
-  bubble.textContent = '';
+  bubbleText.textContent = '';
   bubble.classList.add('show');
   let i = 0;
 
@@ -61,7 +49,7 @@ function say(text, { charDelay = 35, baseFreq = 340 } = {}) {
       return;
     }
     const ch = text[i];
-    bubble.textContent = text.slice(0, i + 1);
+    bubbleText.textContent = text.slice(0, i + 1);
     if (/[a-zA-Z0-9]/.test(ch)) {
       // small pitch wobble per character = the "Animalese" chatter effect
       const wobble = (ch.charCodeAt(0) % 7) * 18;

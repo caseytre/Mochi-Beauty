@@ -1,6 +1,7 @@
 :root {
   --blush-pink: #fbb6c9;
   --outline: #1e1412;
+  --bubble-bg: #fff9f0;
   --idle-duration: 2.4s;
 }
 
@@ -42,28 +43,6 @@ body {
   50%      { transform: translateY(-1.2%) scale(1.01); }
 }
 
-/* Eyes-closed blink overlay: two rounded bars placed over the base sprite's
-   eyes. Hidden by default, shown briefly by mochi.js on an interval. */
-.blink-overlay {
-  position: absolute;
-  opacity: 0;
-  transition: opacity 40ms linear;
-  pointer-events: none;
-}
-
-.blink-overlay.left  { left: 30.5%; top: 42.0%; width: 8.5%; height: 3.2%; }
-.blink-overlay.right { left: 61.5%; top: 42.0%; width: 8.5%; height: 3.2%; }
-
-.blink-overlay span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--outline);
-  border-radius: 40%;
-}
-
-.mochi.blinking .blink-overlay { opacity: 1; }
-
 /* ---------- Emotion props (swap-in accessories, not face redraws) ---------- */
 .prop {
   position: absolute;
@@ -89,18 +68,18 @@ body {
 
 .prop svg { width: 100%; height: 100%; overflow: visible; }
 
-/* ---------- Speech bubble ---------- */
+/* ---------- Speech bubble: blocky pixel-art style, no smooth curves ---------- */
 .speech-bubble {
   position: absolute;
   left: 50%;
-  top: -18%;
+  top: -20%;
   transform: translate(-50%, 0);
   min-width: 44%;
   max-width: 86%;
-  background: #fff;
+  background: var(--bubble-bg);
   border: 4px solid var(--outline);
-  border-radius: 16px;
-  padding: 10px 16px;
+  border-radius: 0;
+  padding: 10px 16px 14px;
   font-weight: 700;
   font-size: clamp(14px, 2.4vw, 20px);
   color: var(--outline);
@@ -113,29 +92,43 @@ body {
 
 .speech-bubble.show { opacity: 1; }
 
+/* stepped, square-cornered tail (two stacked blocks, not a smooth triangle) */
+.speech-bubble::before,
 .speech-bubble::after {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: -14px;
-  transform: translateX(-50%);
-  width: 0; height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 14px solid var(--outline);
+  left: 28px;
+  background: var(--outline);
 }
-
 .speech-bubble::before {
-  content: "";
+  bottom: -12px;
+  width: 20px;
+  height: 8px;
+}
+.speech-bubble::after {
+  bottom: -20px;
+  left: 32px;
+  width: 12px;
+  height: 8px;
+}
+/* cream fill on top of each step, inset by the border thickness, so the
+   tail reads as hollow pixel blocks matching the bubble body */
+.speech-bubble .bubble-tail-fill-1,
+.speech-bubble .bubble-tail-fill-2 {
   position: absolute;
-  left: 50%;
-  bottom: -9px;
-  transform: translateX(-50%);
-  width: 0; height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 10px solid #fff;
-  z-index: 1;
+  background: var(--bubble-bg);
+}
+.speech-bubble .bubble-tail-fill-1 {
+  left: 32px;
+  bottom: -8px;
+  width: 12px;
+  height: 4px;
+}
+.speech-bubble .bubble-tail-fill-2 {
+  left: 36px;
+  bottom: -16px;
+  width: 4px;
+  height: 4px;
 }
 
 /* ---------- demo controls (not part of the shipped rig) ---------- */
