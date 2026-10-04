@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Mochi's Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Parisienne&family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* coquette: blush, cream, ribbon rose, cherry, soft wine outlines */
+:root{
+  --bg:#FFFDFC; --fg:#4A2E24; --muted:#9A7665; --card:#FFFFFF;
+  --line:#4A2E24; --shadow:#E7BBA3; --wall:#4A2E24;
+  --accent:#E89765; --stage:#FFFFFF; --gingham:rgba(246,193,166,.30); --chip:#FFE9DD;
+  --living:#F9E5D8; --kitchen:#FFF3E0; --bath:#DCEAF8; --vanity:#F6D8C6; --bed:#F3DDDC; --office:#EFE8E1; --closet:#F6E4DE;
+  --room:#F9E5D8;
+  color-scheme:light;
+}
+[data-room="living"]{--room:var(--living)}
+[data-room="closet"]{--room:var(--closet)}
+[data-room="kitchen"]{--room:var(--kitchen)}
+[data-room="bath"]{--room:var(--bath)}
+[data-room="vanity"]{--room:var(--vanity)}
+[data-room="bed"]{--room:var(--bed)}
+[data-room="office"]{--room:var(--office)}
+
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-attachment:fixed;background-size:192px 192px;color:var(--fg);font:400 16px/1.55 'DM Sans',system-ui,sans-serif;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:880px;margin-inline:auto;display:flex;flex-direction:column;gap:30px}
+h1,h2,.px{font-family:'Pixelify Sans','Courier New',monospace;font-weight:600;margin:0;text-wrap:balance}
+h1{font-size:clamp(2rem,6vw,3rem);line-height:1.05;text-shadow:3px 3px 0 #F9D5C1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h2{font-size:1.2rem;line-height:1.2}
+p{margin:0}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.sub{font-family:'Parisienne','Snell Roundhand',cursive;font-size:1.55rem;line-height:1.25;color:var(--accent);margin-top:6px;max-width:34ch}
+.mast{display:flex;flex-direction:column}
+
+.stage{position:relative;max-width:960px;width:100%;margin-inline:auto;background:var(--stage);padding:10px;box-shadow:0 0 0 2px var(--line),0 0 0 8px #FFE3D3,0 0 0 10px var(--line),8px 8px 0 10px var(--shadow)}
+.scene{position:relative;line-height:0}
+.scene svg{display:block;width:100%;height:auto}
+.scene .w{fill:var(--wall)}
+.plq{font-family:'Pixelify Sans',monospace;font-size:9px;fill:#4A2E24}
+.item{cursor:pointer;transition:transform .12s steps(2);transform-box:fill-box}
+.item:hover,.item:focus-visible{transform:translateY(-2px);filter:brightness(1.08)}
+.item:focus-visible{outline:none}
+.mochi{position:absolute;width:10.714%;cursor:pointer;transition:left .85s cubic-bezier(.4,0,.2,1),top .85s cubic-bezier(.4,0,.2,1)}
+.mw{position:relative;animation:bob 2.4s steps(1) infinite}
+.mw img{display:block;width:100%;height:auto;image-rendering:pixelated}
+.acc{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.mochi.hop .mw,.heromochi.hop .mw{animation:hop .85s ease-out}
+.mochi:focus-visible,.heromochi:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.heromochi{cursor:pointer;width:135px;padding-top:30px}
+.cloud{animation:drift linear infinite}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(var(--d))}}
+.bulb{animation:twinkle 2.4s steps(1) infinite}
+.b1{animation-delay:-.8s}.b2{animation-delay:-1.6s}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5%)}}
+@keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-28%)}100%{transform:translateY(0)}}
+
+.bubble{max-width:960px;width:100%;margin-inline:auto;background:var(--card);padding:12px 14px;box-shadow:0 0 0 2px var(--line),4px 4px 0 var(--shadow);display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:start;min-height:5.2rem}
+.who{grid-column:1/-1;font-family:'Pixelify Sans',monospace;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.bubble p{min-width:0;font-size:1.05rem;min-height:3.1em}
+.snd{font:inherit;font-family:'Pixelify Sans',monospace;font-size:.85rem;background:transparent;color:var(--muted);border:2px solid var(--line);padding:2px 8px;cursor:pointer;align-self:end}
+.snd[aria-pressed="true"]{background:var(--chip);color:var(--fg)}
+
+.disclosure{max-width:960px;width:100%;margin-inline:auto;font-size:.9rem;color:var(--muted)}
+.rooms{max-width:960px;width:100%;margin-inline:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.rbtn{display:block;text-align:center;text-decoration:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:1.1rem;padding:12px 8px;background:var(--room);color:var(--fg);box-shadow:0 0 0 2px var(--line),4px 4px 0 var(--shadow);transition:transform .1s steps(2),box-shadow .1s steps(2)}
+.rbtn:hover{transform:translate(2px,2px);box-shadow:0 0 0 2px var(--line),2px 2px 0 var(--shadow)}
+.rbtn[aria-current="page"]{transform:translate(4px,4px);box-shadow:0 0 0 2px var(--line);}
+.foot{max-width:960px;width:100%;margin-inline:auto;font-size:.8rem;color:var(--muted)}
+
+/* room pages */
+.back{align-self:flex-start;font-family:'Pixelify Sans',monospace;font-size:1rem;text-decoration:none;padding:4px 10px;background:var(--card);box-shadow:0 0 0 2px var(--line),3px 3px 0 var(--shadow)}
+.back:hover{transform:translate(1px,1px)}
+.hero{max-width:960px;width:100%;margin-inline:auto;background:var(--room);padding:20px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:end;box-shadow:0 0 0 2px var(--line),6px 6px 0 var(--shadow)}
+.hero .say{margin-top:12px;background:var(--card);padding:10px 12px;box-shadow:0 0 0 2px var(--line);min-height:3.4em;max-width:40ch}
+
+.grid{max-width:960px;width:100%;margin:0 auto;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:20px}
+.card{min-width:0;background:var(--card);padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 0 0 2px var(--line),4px 4px 0 var(--shadow)}
+.card:target{outline:3px dashed var(--accent);outline-offset:6px}
+.tile{width:84px;height:84px;background:var(--room);display:grid;place-items:center;box-shadow:0 0 0 2px var(--line)}
+.tile svg{width:66px;height:66px;display:block;shape-rendering:crispEdges}
+.card p{color:var(--muted);font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:'Pixelify Sans',monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;background:var(--chip);padding:1px 8px;box-shadow:0 0 0 2px var(--line)}
+.buy{margin-top:auto;align-self:flex-start;font-family:'Pixelify Sans',monospace;font-weight:600;text-decoration:none;padding:8px 12px;background:var(--accent);color:#4A2E24;box-shadow:0 0 0 2px var(--line),3px 3px 0 var(--shadow)}
+.buy:hover{transform:translate(1px,1px)}
+
+@media (max-width:620px){
+  .rooms{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero{grid-template-columns:minmax(0,1fr);}
+  .heromochi{width:108px;order:-1}
+  .stage{padding:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  .mochi,.mw,.cloud,.bulb,.item,.rbtn{transition:none!important;animation:none!important}
+}
+
+.roomlink{cursor:pointer}
+.roomlink:hover,.roomlink:focus-visible{filter:brightness(1.06)}
+.roomlink:focus-visible{outline:none}
+.room-stage{max-width:540px;margin-inline:auto}
+.room-stage svg{display:block;width:100%;height:auto}
+.filter{max-width:960px;width:100%;margin-inline:auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.filter label{font-family:'Pixelify Sans',monospace;font-weight:600}
+.filter select{font:inherit;min-width:0;max-width:100%;padding:8px 12px;background:var(--card);color:var(--fg);border:0;border-radius:0;box-shadow:0 0 0 2px var(--line),3px 3px 0 var(--shadow)}
+.count{color:var(--muted);font-size:.9rem}
+
+#iris{position:fixed;inset:0;z-index:9999;pointer-events:all;background:#4A2E24}
+#iris.off{display:none}
+.intro .rooms,.intro .disclosure,.intro .foot{display:none}
+.bubble.clickable{cursor:pointer}
+.bubble.clickable:hover{transform:translate(1px,1px)}
+.next{display:inline-block;color:var(--accent);animation:blink 1s steps(2) infinite}
+.hint{grid-column:1/-1;font-family:'Pixelify Sans',monospace;font-size:.9rem;color:var(--accent);letter-spacing:.06em;animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.door{cursor:pointer}
+.door:focus-visible{outline:none}
+.door:focus-visible .doorglow,.door:hover .doorglow{opacity:1}
+.doorglow{opacity:0}
+.arrow{opacity:0}
+.door.pulse .arrow{opacity:1;animation:arrowbob .9s steps(2) infinite}
+.door.pulse .doorglow{opacity:1;animation:blink 1.1s steps(2) infinite}
+@keyframes arrowbob{50%{transform:translateY(4px)}}
+.smoke{animation:rise 4s steps(8) infinite;transform-box:fill-box}
+@keyframes rise{from{transform:translate(0,0);opacity:.9}to{transform:translate(10px,-30px);opacity:0}}
+.toprow{max-width:960px;width:100%;margin-inline:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+@media (prefers-reduced-motion:reduce){.next,.hint,.smoke,.door.pulse .arrow,.door.pulse .doorglow{animation:none!important}}
+.next[hidden],.hint[hidden]{display:none!important}
+
+.card{position:relative}
+.bubble{box-shadow:0 0 0 2px var(--line),0 0 0 6px #FFE3D3,0 0 0 8px var(--line)}
+.who::before{content:"\2661 "}
+#iris,#iris.off{background:#3A231B}
+#iris.off{display:none}
+
+.mast{align-items:center;text-align:center;padding-top:6px}
+.mast h1{justify-content:center;font-weight:400;font-size:clamp(2.4rem,8vw,4rem);letter-spacing:.02em;text-shadow:2px 2px 0 #F9D5C1}
+.hero h1{font-weight:400}
+
+
+.bgf{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.pbow{display:block;width:52px;height:24px}
+.pheart{display:inline-block;width:18px;height:16px;margin-right:8px;vertical-align:-2px}
+.tb{display:inline-flex}.tb.l{transform:none}
+.cb{position:absolute;top:-17px;z-index:2;line-height:0}
+.cb.l{left:-14px;transform:rotate(-14deg)}.cb.r{right:-14px;transform:rotate(14deg)}
+.cardbow{position:absolute;top:-12px;right:10px;width:38px;line-height:0}
+.cardbow .pbow{width:38px;height:18px}
+/* compact room pages */
+body[data-room] .wrap{gap:20px}
+body[data-room] .hero{padding:12px 16px;gap:12px;align-items:center;max-width:960px}
+body[data-room] .hero h1{font-size:1.7rem;line-height:1.1}
+body[data-room] .hero p{font-size:.85rem;margin:2px 0 0}
+body[data-room] .hero .say{max-width:60ch;margin-top:8px;padding:6px 10px;min-height:2.6em;font-size:.85rem}
+body[data-room] .heromochi{width:80px;padding-top:18px}
+body[data-room] .rooms{max-width:960px;gap:8px;grid-template-columns:repeat(6,minmax(0,1fr))}
+body[data-room] .rbtn{font-size:.85rem;padding:7px 6px;box-shadow:0 0 0 2px var(--line),3px 3px 0 var(--shadow)}
+body[data-room] .pheart{width:13px;height:12px;margin-right:5px;vertical-align:-1px}
+@media (max-width:620px){
+  body[data-room] .hero{grid-template-columns:minmax(0,1fr) auto}
+  body[data-room] .heromochi{width:70px;order:0}
+  body[data-room] .rooms{grid-template-columns:repeat(3,minmax(0,1fr))}
+  body[data-room] .rbtn{font-size:.75rem;padding:6px 2px}
+  body[data-room] .pheart{display:none}
+}
+
+.tile img{width:100%;height:100%;object-fit:contain;display:block}
+.rooms{grid-template-columns:repeat(4,minmax(0,1fr))}
+body[data-room] .rooms{grid-template-columns:repeat(7,minmax(0,1fr))}
+@media (max-width:620px){
+  .rooms{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body[data-room] .rooms{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+body[data-room] .rbtn{white-space:nowrap;font-size:.8rem;padding:7px 2px}
+@media (max-width:620px){body[data-room] .rbtn{font-size:.68rem}}
+
+.fall{transform-box:fill-box;animation:fallleaf 12s linear infinite;opacity:.95}
+@keyframes fallleaf{0%{transform:translate(0,-12px) rotate(0deg)}50%{transform:translate(calc(var(--sx,24px)*.5),150px) rotate(140deg)}100%{transform:translate(var(--sx,24px),312px) rotate(300deg)}}
+@media (prefers-reduced-motion:reduce){.fall{animation:none!important;display:none}}
+
+</style>
+<div id="iris" class="black" aria-hidden="true"></div>
+<script>try{if(sessionStorage.getItem('mochi-in')!=='1')document.getElementById('iris').className='off'}catch(e){document.getElementById('iris').className='off'}</script>
+<div class="wrap">
+<header class="mast"><h1>Mochi's Home</h1></header>
+<div class="stage"><div class="scene" id="scene"></div></div>
+<div class="bubble" id="bubble"><span class="who">mochi</span><p><span id="say"></span> <span class="next" id="next" hidden>&#9660;</span></p><button id="snd" class="snd" type="button" aria-pressed="false">sound off</button><span class="hint" id="hint" hidden>click the door to go inside</span></div>
+<p class="disclosure" id="disc"></p>
+<nav class="rooms" id="rooms" aria-label="Rooms"></nav>
+<p class="foot">Prices and availability can change on Amazon. Picks are things Mochi recommends.</p>
+</div>
+<script>
+/* EDIT ME: rooms, disclosure and products live here. */
+const DISCLOSURE = "As an Amazon Associate, Mochi earns from qualifying purchases.";
+const MOCHI_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAtCAYAAAA6GuKaAAADHUlEQVR4nN1ZMWvbQBR+bktn4xpMsEVDiMdAwGhphi7pktFjwBAodOvcwaAQg/9Ch0KhYOjoMVOXDu1iBAGPEo6LbFyDYzy3FHVwT5ZO73TvTmeH5gNh+bj37tPze0/fnQEeIqxyKfyf/IJVLoU/378KTS+Q1+8j02RM+hPhia4hRnDQaYDtuKnxYLEs6K6DQejMKpfCQacBxWobVtMu2I4LwWJZYGQHnQZ5EdtxAQAie8yvCmmlSLMFVcFssF9BB2TSFLKBNwGrXsvlgwJpIa6mXShW24mxwJtA4E1IC2BzWWrowlj3YMSoD5MHRlvervBwSOt2CR0MOg3llxIp0nmKZhv+UqR3GWUG1Wgby2nWn7P6tCloaQ8VYkpzy6WQ8kpPTbiP9IiDokWUI83Ej45gEtnEX0j9VgWaPciMuFJO244LI99NEDFhY9Vr0dXszaWFiT6NKEX4RRmZLBwcJv2o/kJYxLU3AdsAr1tEqZK5CfA+9hNjTLQD0KLMwKLNxD/vU0S82Zvnj3Sx2oZBpwvPzj+omMHId+Hu85sUYQzJFjlH5wgLMVgsC/XXTTKxP19/RBcVste5qCCljZxPk8cvn6Pz4mQpczDCmBbHUoS0oWTEV1P11IiDpYiKYMI6CKlPs1TB+my8pYnuGWHbcUEl5UQtj7x1Z7078CZwfHmNEh/5buKe4ebqLCow23ETvVq0PRN1DgBi95DpEUZwNh5KW+G/Ax3otyqUpVFISW9DQPVbFYL6w9sdgIaetuo1uLk6I8+PpwYVMqWXGeltRFl01NDsbSJrXJqaAB55ceHxkJL+9eIt7O0fwWw8jD6PzzffMSTmXl4nvoP3LjVf9RBy5+cefJSNn5oGi2Xh5PQiHPluFFVRdDHwNnv7R3D3fUOWraFCGOCeT5h0D9tJhTgbD5Udi2yeAqz1i6PflTKf1CqXQhWxn1WcAGv9ERdcB4cNrWhn7lxGvpupj3kJipGW2esQl6YHI0bRy9uwx5ArPXj5+e3LJzg5vUiMyexN//MFAGviv1e3qQvbBonGqPZUkHcu/JhKhPLa8/gLiu7tH3S1mhsAAAAASUVORK5CYII=";
+
+const ROOMS = [
+  { key: "living", label: "living room", page: "living-room.html", blurb: "where i lie down and judge things." },
+  { key: "kitchen", label: "kitchen", page: "kitchen.html", blurb: "snacks happen here." },
+  { key: "bed", label: "bedroom", page: "bedroom.html", blurb: "where i recharge. please knock." },
+  { key: "closet", label: "closet", page: "closet.html", blurb: "where the outfits start." },
+  { key: "bath", label: "bathroom", page: "bathroom.html", blurb: "where i think about everything." },
+  { key: "vanity", label: "vanity", page: "vanity.html", blurb: "the good stuff. do not touch." },
+  { key: "office", label: "office", page: "office.html", blurb: "where i pretend to be productive." }
+];
+
+/* badge: null | "tried" (Casey tried it) | "top" (top rated on Amazon). sample:true shows a SAMPLE chip; delete it for real picks. */
+const PRODUCTS = [
+  { id: "candle", cat: "candles", room: "living", icon: "candle", name: "Scented Candle", url: "https://link.amazon/B05nwPFmv", img: "", badge: null, desc: "A scented candle for a cozy room." },
+  { id: "cap", cat: "accessories", room: "closet", icon: "cap", name: "Baseball Cap", url: "https://link.amazon/B047MskKj", img: "", badge: null, desc: "An easy everyday baseball cap." },
+  { id: "jewelry", cat: "accessories", room: "closet", icon: "stand", name: "Jewelry Stand", url: "https://link.amazon/B05nusiWz", img: "", badge: null, desc: "Keeps necklaces and rings in one place." },
+  { id: "packing", cat: "travel", room: "closet", icon: "bag", name: "Packing Cubes", url: "https://link.amazon/B00WSvhkz", img: "", badge: null, desc: "Zip cubes that keep a suitcase organized." },
+  { id: "owala", cat: "drinkware", room: "kitchen", icon: "bottle", name: "Owala Water Bottle", url: "https://link.amazon/B08jBJAdm", img: "", badge: null, desc: "Insulated bottle with a built-in straw." },
+  { id: "stanley", cat: "drinkware", room: "kitchen", icon: "mug", name: "Stanley Tumbler", url: "https://link.amazon/B00p7afd3", img: "", badge: null, desc: "Big insulated tumbler with a handle." },
+  { id: "icedcup", cat: "drinkware", room: "kitchen", icon: "mug", name: "Iced Coffee Tumbler", url: "https://link.amazon/B08IMIJKH", img: "", badge: null, desc: "Insulated cup with a lid and straw." },
+  { id: "straws", cat: "drinkware", room: "kitchen", icon: "bottle", name: "Glass Straws", url: "https://link.amazon/B0igUAwhQ", img: "", badge: null, desc: "Reusable straws that are easy to clean." },
+  { id: "containers", cat: "storage", room: "kitchen", icon: "jar", name: "Glass Food Containers", url: "https://link.amazon/B04ldrM1S", img: "", badge: null, desc: "Glass containers for meal prep and leftovers." },
+  { id: "pillowcase", cat: "bedding", room: "bed", icon: "pillow", name: "Satin Pillowcase", url: "https://link.amazon/B07qsYAM9", img: "", badge: null, desc: "Smooth on hair and skin." },
+  { id: "throw", cat: "bedding", room: "bed", icon: "blanket", name: "Checkered Plush Throw", url: "https://link.amazon/B01PPnVEP", img: "", badge: null, desc: "Thick, textured throw blanket." },
+  { id: "sleepmask", cat: "sleep", room: "bed", icon: "mask", name: "Silk Sleep Mask", url: "https://link.amazon/B0d52yVRX", img: "", badge: null, desc: "Blocks light for sleep and naps." },
+  { id: "pillowspray", cat: "sleep", room: "bed", icon: "bottle", name: "Deep Sleep Pillow Spray", url: "https://link.amazon/B0gwaJXV2", img: "", badge: null, desc: "Calming mist for your bedding." },
+  { id: "clock", cat: "sleep", room: "bed", icon: "lamp", name: "Sunrise Alarm Clock", url: "https://link.amazon/B05kf45F0", img: "", badge: null, desc: "Wakes you up with gradual light." },
+  { id: "earplugs", cat: "sleep", room: "bed", icon: "jar", name: "Soft Silicone Earplugs", url: "https://link.amazon/B048c5ont", img: "", badge: null, desc: "Reusable earplugs for quieter sleep." },
+  { id: "pjs", cat: "sleepwear", room: "bed", icon: "blanket", name: "Satin Pajama Set", url: "https://link.amazon/B0f7kVMbH", img: "", badge: null, desc: "Soft satin pajama set." },
+  { id: "slippers", cat: "sleepwear", room: "bed", icon: "sock", name: "Fluffy Slippers", url: "https://link.amazon/B08rEE29Q", img: "", badge: null, desc: "Fluffy slip-on slippers." },
+  { id: "socks", cat: "sleepwear", room: "bed", icon: "sock", name: "Cozy Fluffy Socks", url: "https://link.amazon/B035xqYCB", img: "", badge: null, desc: "Warm, fuzzy socks." },
+  { id: "bedlamp", cat: "lighting", room: "bed", icon: "lamp", name: "Dimmable Bedside Lamp", url: "https://link.amazon/B03HcJcoL", img: "", badge: null, desc: "Dimmable lamp for the nightstand." },
+  { id: "whale", cat: "comfort", room: "bed", icon: "pillow", name: "Weighted Warmie Whale", url: "https://link.amazon/B0iizKmUr", img: "", badge: null, desc: "Weighted plush for comfort and warmth." },
+  { id: "epsom", cat: "bath", room: "bath", icon: "soap", name: "Epsom Salt", url: "https://link.amazon/B06LjchC6", img: "", badge: null, desc: "Epsom salt for a bath soak." },
+  { id: "handcream", cat: "skin care", room: "bath", icon: "bottle", name: "Shea Hand Cream", url: "https://link.amazon/B0em5CJIc", img: "", badge: null, desc: "Rich hand cream for dry skin." },
+  { id: "shavegel", cat: "body care", room: "bath", icon: "bottle", name: "Shaving Gel", url: "https://link.amazon/B0gqng3BG", img: "", badge: null, desc: "Smooth gel for a close, comfortable shave." },
+  { id: "toiletry", cat: "storage", room: "bath", icon: "bag", name: "Travel Toiletry Bag", url: "https://link.amazon/B04q8L3Vw", img: "", badge: null, desc: "Zip pouch for skincare and makeup." },
+  { id: "lipbalm", cat: "lips", room: "vanity", icon: "gloss", name: "Lip Treatment", url: "https://link.amazon/B0a06jIpp", img: "", badge: null, desc: "Treatment for dry lips." },
+  { id: "eadem", cat: "lips", room: "vanity", icon: "gloss", name: "Eadem Lip Gloss", url: "https://link.amazon/B08N2QY0b", img: "", badge: null, desc: "Glossy lip color from Eadem." },
+  { id: "lipmask", cat: "lips", room: "vanity", icon: "gloss", name: "Lip Sleeping Mask", url: "https://link.amazon/B0ceZU0EE", img: "", badge: null, desc: "Overnight mask for soft lips." },
+  { id: "lipliner", cat: "lips", room: "vanity", icon: "gloss", name: "Lip Liner", url: "https://link.amazon/B0iMAcD4O", img: "", badge: null, desc: "Defines and shapes the lip." },
+  { id: "primer1", cat: "face", room: "vanity", icon: "bottle", name: "Primer 1", url: "https://link.amazon/B0hwZlssQ", img: "", badge: null, desc: "Preps skin for makeup." },
+  { id: "primer2", cat: "face", room: "vanity", icon: "bottle", name: "Primer 2", url: "https://link.amazon/B00Xpi4OZ", img: "", badge: null, desc: "Preps skin for makeup." },
+  { id: "mascara", cat: "eyes", room: "vanity", icon: "brush", name: "Mascara", url: "https://link.amazon/B0jdnUCU2", img: "", badge: null, desc: "Mascara for lashes." },
+  { id: "remover1", cat: "skin care", room: "vanity", icon: "bottle", name: "Makeup Remover 1", url: "https://link.amazon/B06AvRcOQ", img: "", badge: null, desc: "Takes off makeup at the end of the day." },
+  { id: "kosas", cat: "face", room: "vanity", icon: "gloss", name: "Kosas Concealer", url: "https://link.amazon/B09KFsDzW", img: "", badge: null, desc: "Concealer from Kosas for coverage and a natural finish." },
+  { id: "niacinamide", cat: "skin care", room: "vanity", icon: "bottle", name: "Niacinamide Serum", url: "https://link.amazon/B0iBOPvIL", img: "", badge: null, desc: "Serum for oil and pores." },
+  { id: "clawclip", cat: "hair", room: "vanity", icon: "brush", name: "Hair Claw Clip", url: "https://link.amazon/B0hcVecvK", img: "", badge: null, desc: "Quick, easy updos." },
+  { id: "journal", cat: "stationery", room: "office", icon: "notebook", name: "Five Minute Journal", url: "https://link.amazon/B05pcVdG1", img: "", badge: null, desc: "Short daily prompts for morning and night." },
+  { id: "pens", cat: "stationery", room: "office", icon: "pen", name: "Pens", url: "https://link.amazon/B00tTOjV0", img: "", badge: null, desc: "Smooth pens for journaling." }
+];
+
+/* 11x11 pixel icons. o outline, a room accent, b light, c cream, y gold, g green, h dark green */
+const ICONS = {
+  cap: ["...........","...ooooo...","..oaaaaao..",".oaaaaaaao.",".oabaaaaao.",".oaaaaaaao.","ooooooooooo","oaaaaaaaaoo",".ooooooooo.","...........","..........."],
+  stand: ["..ooooooo..","..y..y..y..","..y..y..y..","..y..o..y..",".....o.....",".....o.....",".....o.....","..ooooooo..",".oaaaaaaao.","..ooooooo..","..........."],
+  pen: ["...........","........o..","......ooyo.",".....ooyo..","....ooyo...","...ooyo....","..ooyo.....",".ooao......",".oao.......","..o........","..........."],
+  bottle: ["....ooo....","....obo....","...ooooo...","..oaaaaao..","..oabbbao..","..oaaaaao..","..oabbbao..","..oaaaaao..","..oaaaaao..","..ooooooo..","..........."],
+  bag: ["...........","...o...o...","..o.ooo.o..",".ooooooooo.",".oaaaaaaao.",".oaaaaaaao.",".oayyyyyao.",".oaaaaaaao.",".ooooooooo.","...........","..........."],
+  mask: ["...........","...........",".ooooooooo.","oaaaaaaaaao","oabbaaabbao","oaaaaaaaaao",".ooooooooo.","...........","...........","...........","..........."],
+  sock: ["..ooooo....","..obbbo....","..oaaao....","..oaaao....","..oaaao....","..oaaaooo..","..oaaaaaao.","..oaaaaaao.","...ooooooo.","...........","..........."],
+  jar: ["...........","...ooooo...","...obbbo...","..ooooooo..","..oaaaaao..","..oabbbao..","..oaaaaao..","..oaaaaao..","..ooooooo..","...........","..........."],
+  pillow: ["...........",".ooooooooo.","oaaaaaaaaao","oabbbbbbbao","oabbbbbbbao","oabbbbbbbao","oaaaaaaaaao",".ooooooooo.","...........","...........","..........."],
+  notebook: ["..ooooooo..","..oaaaaao..","..oabbbao.o","..oabbbao.o","..oaaaaao.o","..oaaaaao.o","..oaaaaao.o","..oaaaaao..","..ooooooo..","...........","..........."],
+  lamp: ["...ooooo...","..oyyyyyo..",".oyyyyyyyo.",".ooooooooo.",".....o.....",".....o.....",".....o.....",".....o.....","...ooooo...","..ooooooo..","..........."],
+  plant: ["..g..h..g..","..gg.h.gg..","...ggggg...","....ggg....",".....h.....","..ooooooo..","..oaaaaao..","..oaaaaao..","...oaaao...","...ooooo...","..........."],
+  blanket: ["...........","ooooooooooo","oaaaaaaaaao","obbbbbbbbbo","oaaaaaaaaao","obbbbbbbbbo","oaaaaaaaaao","ooooooooooo","o.o.o.o.o.o","...........","..........."],
+  candle: [".....y.....","....yyy....",".....o.....","...ooooo...","...occco...","...occco...","...oaaao...","...oaaao...","...ooooo...","...........","..........."],
+  mug: ["...b.b.....","....b.b....",".ooooooo...",".oaaaaaooo.",".oaaaaao.o.",".oaaaaao.o.",".oaaaaaooo.",".oaaaaao...","..ooooo....","...........","..........."],
+  pan: ["...........","..ooooo....",".oaaaaao...","oaaaaaaaooo","oaaaaaaaoyo","oaaaaaaaooo",".oaaaaao...","..ooooo....","...........","...........","..........."],
+  kettle: [".....o.....","....ooo....","...ooooo...","..oaaaaao..","ooaaaaaaaoo","o.oaaaaao.o","..oaaaaao.o","..ooooooo..","...........","...........","..........."],
+  soap: ["......b....",".....b.b...","......b....","..ooooooo..",".oaaaaaaao.",".oabbbbbao.",".oaaaaaaao.","..ooooooo..","...........","...........","..........."],
+  towel: ["yyyyyyyyyyy",".oaaaaaaao.",".obbbbbbbo.",".oaaaaaaao.",".obbbbbbbo.",".oaaaaaaao.",".obbbbbbbo.",".ooooooooo.","...........","...........","..........."],
+  gloss: ["....ooo....","...oyyyo...","...oyyyo...","...ooooo...","...oaaao...","...oaaao...","...oaaao...","...oaaao...","...oaaao...","...ooooo...","..........."],
+  mirror: ["...ooooo...","..obbbbbo..",".obbcbbbbo.",".obbbbbbbo.",".obbbbbbbo.","..obbbbbo..","...ooooo...",".....o.....",".....o.....","....ooo....","..........."],
+  brush: ["....aaa....","...aaaaa...","...aaaaa...","....ooo....","....ooo....",".....y.....",".....y.....",".....y.....",".....y.....","....yyy....","..........."],
+  compact: ["..ooooooo..",".oaaaaaaao.","oaabbbbbaao","oabbbbbbbao","oabbbbbbbao","oaabbbbbaao",".oaaaaaaao.","..ooooooo..","...........","...........","..........."]
+};
+const ICON_COLORS = { o: "#4A2E24", b: "#FCECD6", c: "#FCECD6", y: "#E8B943", g: "#7EBB60", h: "#639A4B" };
+
+function iconSVG(name, accent) {
+  const g = ICONS[name] || ICONS.candle;
+  let r = "";
+  g.forEach((row, y) => {
+    for (let x = 0; x < 11; x++) {
+      const c = row[x];
+      if (!c || c === ".") continue;
+      const f = c === "a" ? accent : ICON_COLORS[c];
+      if (f) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${f}"/>`;
+    }
+  });
+  return `<svg viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges">${r}</svg>`;
+}
+
+/* Mochi shared helpers: sprite + accessories, sound (animalese, meow, music), iris transitions. */
+const ACC = {"kitchen": "<rect x=\"16\" y=\"-8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"-8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"-8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"-8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"-8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"21\" y=\"-8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"-8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"-7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"-6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"14\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"26\" y=\"-5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"14\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"18\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"22\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"26\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"14\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"18\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"22\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"26\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"18\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"22\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"18\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"22\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"0\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"0\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"22\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"1\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"18\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"1\" width=\"1\" height=\"1\" fill=\"#E6DAC4\"/><rect x=\"22\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"15\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"16\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"17\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"18\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"19\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"20\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"21\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"22\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"23\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"24\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F2E8D2\"/><rect x=\"25\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"21\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"23\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/>", "vanity": "<rect x=\"15\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"23\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"1\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"16\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"1\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"20\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"23\" y=\"1\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"24\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"15\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"19\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"20\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"21\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"23\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"24\" y=\"2\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"25\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"15\" y=\"3\" width=\"1\" height=\"1\" fill=\"#FFF1B0\"/><rect x=\"16\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"17\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"18\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"19\" y=\"3\" width=\"1\" height=\"1\" fill=\"#E8456E\"/><rect x=\"20\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"21\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"22\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"23\" y=\"3\" width=\"1\" height=\"1\" fill=\"#FFF1B0\"/><rect x=\"24\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6C445\"/><rect x=\"25\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"15\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"16\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"17\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"18\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"19\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"20\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"21\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"22\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"23\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"24\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D9A02A\"/><rect x=\"25\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"21\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"23\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/>", "bed": "<rect x=\"25\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"26\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"27\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"28\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"29\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"30\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"31\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"32\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"21\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"23\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"25\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"26\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"27\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"28\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"29\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"30\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"31\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"32\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"33\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"34\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"35\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"19\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"20\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"21\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"22\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"23\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"24\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"25\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"26\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"27\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"28\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"29\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"30\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"31\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"32\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"33\" y=\"0\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"34\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"35\" y=\"0\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"36\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"16\" y=\"1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"17\" y=\"1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"18\" y=\"1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"19\" y=\"1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"20\" y=\"1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"21\" y=\"1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"22\" y=\"1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"23\" y=\"1\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"24\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"25\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"26\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"27\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"28\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"29\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"30\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"31\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"32\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"35\" y=\"1\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"36\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"2\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"15\" y=\"2\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"19\" y=\"2\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"20\" y=\"2\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"21\" y=\"2\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"22\" y=\"2\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"23\" y=\"2\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"24\" y=\"2\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"25\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"2\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"35\" y=\"2\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"36\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"14\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"15\" y=\"3\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"16\" y=\"3\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"17\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"18\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"19\" y=\"3\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"20\" y=\"3\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"21\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"22\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"23\" y=\"3\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"24\" y=\"3\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"25\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"26\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"35\" y=\"3\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"36\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"11\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"13\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"14\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"26\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"27\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"4\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"35\" y=\"4\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"36\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"11\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"13\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"14\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"26\" y=\"5\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"27\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"5\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"35\" y=\"5\" width=\"1\" height=\"1\" fill=\"#7F9AD6\"/><rect x=\"36\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"21\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"23\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"25\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"26\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"6\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"35\" y=\"6\" width=\"1\" height=\"1\" fill=\"#AFC2EF\"/><rect x=\"36\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"32\" y=\"7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"34\" y=\"7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"35\" y=\"7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"36\" y=\"7\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"37\" y=\"7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"32\" y=\"8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"8\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"34\" y=\"8\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"35\" y=\"8\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"36\" y=\"8\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"37\" y=\"8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"32\" y=\"9\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"9\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"34\" y=\"9\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"35\" y=\"9\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"36\" y=\"9\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"37\" y=\"9\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"32\" y=\"10\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"10\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"34\" y=\"10\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"35\" y=\"10\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"36\" y=\"10\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"37\" y=\"10\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"33\" y=\"11\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"11\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"35\" y=\"11\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"36\" y=\"11\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/>", "bath": "<rect x=\"14\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"21\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"23\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"10\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"11\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"26\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"27\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"28\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"9\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"10\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"22\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"30\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"31\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"8\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"0\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"7\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"8\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"12\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"27\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"1\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"6\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"7\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"8\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"2\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"6\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"7\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"8\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"3\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"15\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"3\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-1\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"0\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"1\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"2\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"3\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"6\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"7\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"8\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"9\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"25\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"31\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"4\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-2\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-1\" y=\"5\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"0\" y=\"5\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"1\" y=\"5\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"5\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"3\" y=\"5\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"5\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"7\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"8\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"5\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-3\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-2\" y=\"6\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-1\" y=\"6\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"0\" y=\"6\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"1\" y=\"6\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"6\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"3\" y=\"6\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"6\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"6\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"6\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"8\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"6\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"19\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"6\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-4\" y=\"7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-3\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-2\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-1\" y=\"7\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"0\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"1\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"3\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"6\" y=\"7\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"7\" y=\"7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"7\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"13\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"7\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"33\" y=\"7\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"7\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-4\" y=\"8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-3\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-2\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-1\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"0\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"1\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"3\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"8\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"5\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"6\" y=\"8\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"7\" y=\"8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"8\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"24\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"8\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"8\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-4\" y=\"9\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-3\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-2\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-1\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"0\" y=\"9\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"1\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"3\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"6\" y=\"9\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"7\" y=\"9\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"9\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"21\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"9\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"29\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"9\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"9\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-4\" y=\"10\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-3\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-2\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-1\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"0\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"1\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"3\" y=\"10\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"4\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"6\" y=\"10\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"7\" y=\"10\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"10\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"10\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"26\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"10\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"10\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-4\" y=\"11\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-3\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-2\" y=\"11\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"-1\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"0\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"1\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"3\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"6\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"7\" y=\"11\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"9\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"10\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"11\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"12\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"13\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"14\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"15\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"16\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"17\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"18\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"19\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"20\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"21\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"22\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"23\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"24\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"25\" y=\"11\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"26\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"27\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"28\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"29\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"30\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"31\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"32\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"33\" y=\"11\" width=\"1\" height=\"1\" fill=\"#D4F1F7\"/><rect x=\"34\" y=\"11\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-4\" y=\"12\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-3\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-2\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-1\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"0\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"1\" y=\"12\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"2\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"3\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"6\" y=\"12\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"7\" y=\"12\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"9\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"10\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"11\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"12\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"13\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"14\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"15\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"16\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"17\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"18\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"19\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"20\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"21\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"22\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"23\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"24\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"25\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"26\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"27\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"28\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"29\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"30\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"31\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"32\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"33\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"34\" y=\"12\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"35\" y=\"12\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-3\" y=\"13\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-2\" y=\"13\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"-1\" y=\"13\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"0\" y=\"13\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"1\" y=\"13\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"13\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"3\" y=\"13\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"13\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"13\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"6\" y=\"13\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"8\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"9\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"10\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"11\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"12\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"13\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"14\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"15\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"16\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"17\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"18\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"19\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"20\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"21\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"22\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"23\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"24\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"25\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"26\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"27\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"28\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"29\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"30\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"31\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"32\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"33\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"34\" y=\"13\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"35\" y=\"13\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-2\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-1\" y=\"14\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"0\" y=\"14\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"1\" y=\"14\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"2\" y=\"14\" width=\"1\" height=\"1\" fill=\"#C9A24F\"/><rect x=\"3\" y=\"14\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"4\" y=\"14\" width=\"1\" height=\"1\" fill=\"#E8C77A\"/><rect x=\"5\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"7\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"9\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"10\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"11\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"13\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"15\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"17\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"19\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"21\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"23\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"25\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"26\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"27\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"28\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"29\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"30\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"31\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"32\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"33\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"14\" width=\"1\" height=\"1\" fill=\"#8FD0DE\"/><rect x=\"35\" y=\"14\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"-1\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"0\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"1\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"2\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"3\" y=\"15\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"4\" y=\"15\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"5\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"10\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"26\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"28\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"30\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"32\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"34\" y=\"15\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"2\" y=\"16\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"3\" y=\"16\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"4\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"5\" y=\"16\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"2\" y=\"17\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"3\" y=\"17\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"4\" y=\"17\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"5\" y=\"17\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"3\" y=\"18\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"18\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"5\" y=\"18\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"6\" y=\"18\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"3\" y=\"19\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"19\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"5\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"6\" y=\"19\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"3\" y=\"20\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"20\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"5\" y=\"20\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"6\" y=\"20\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"21\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"21\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"6\" y=\"21\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"7\" y=\"21\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"22\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"22\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"6\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"7\" y=\"22\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"23\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"23\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"6\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"7\" y=\"23\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"24\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"24\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"6\" y=\"24\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"7\" y=\"24\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"25\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"25\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"6\" y=\"25\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"7\" y=\"25\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"26\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"26\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"7\" y=\"26\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"8\" y=\"26\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"27\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"27\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"7\" y=\"27\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"8\" y=\"27\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"28\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"28\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"7\" y=\"28\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"8\" y=\"28\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"29\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"29\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"8\" y=\"29\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"9\" y=\"29\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"30\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"30\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"8\" y=\"30\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"9\" y=\"30\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"31\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"31\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"8\" y=\"31\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"9\" y=\"31\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"32\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"32\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"8\" y=\"32\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"9\" y=\"32\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"33\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"33\" width=\"1\" height=\"1\" fill=\"#B5834F\"/><rect x=\"8\" y=\"33\" width=\"1\" height=\"1\" fill=\"#8E5E3A\"/><rect x=\"9\" y=\"33\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"34\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"34\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"9\" y=\"34\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"10\" y=\"34\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"35\" width=\"1\" height=\"1\" fill=\"#FBF0DF\"/><rect x=\"8\" y=\"35\" width=\"1\" height=\"1\" fill=\"#FBF0DF\"/><rect x=\"9\" y=\"35\" width=\"1\" height=\"1\" fill=\"#FBF0DF\"/><rect x=\"10\" y=\"35\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"7\" y=\"36\" width=\"1\" height=\"1\" fill=\"#FBF0DF\"/><rect x=\"8\" y=\"36\" width=\"1\" height=\"1\" fill=\"#FBF0DF\"/><rect x=\"9\" y=\"36\" width=\"1\" height=\"1\" fill=\"#FBF0DF\"/>", "office": "<rect x=\"11\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"12\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"13\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"14\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"15\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"24\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"25\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"26\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"27\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"28\" y=\"16\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"9\" y=\"17\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"10\" y=\"17\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"17\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"17\" y=\"17\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"22\" y=\"17\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"23\" y=\"17\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"29\" y=\"17\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"30\" y=\"17\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"9\" y=\"18\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"17\" y=\"18\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"22\" y=\"18\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"30\" y=\"18\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"5\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"6\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"7\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"8\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"9\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"17\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"18\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"19\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"20\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"21\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"22\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"30\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"31\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"32\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"33\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"34\" y=\"19\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"9\" y=\"20\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"17\" y=\"20\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"22\" y=\"20\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"30\" y=\"20\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"9\" y=\"21\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"17\" y=\"21\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"22\" y=\"21\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"30\" y=\"21\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"9\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"10\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"16\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"17\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"22\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"23\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"29\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"30\" y=\"22\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"11\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"12\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"13\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"14\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"15\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"24\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"25\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"26\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"27\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/><rect x=\"28\" y=\"23\" width=\"1\" height=\"1\" fill=\"#8A4B2A\"/>", "living": "<rect x=\"5\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"9\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"6\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"7\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"9\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"10\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"3\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"7\" y=\"4\" width=\"1\" height=\"1\" fill=\"#E0587C\"/><rect x=\"8\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"9\" y=\"4\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"11\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"4\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"5\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"6\" y=\"5\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"7\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"5\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"9\" y=\"5\" width=\"1\" height=\"1\" fill=\"#F6A3BD\"/><rect x=\"10\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"5\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"6\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"8\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"9\" y=\"6\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/>", "closet": "<rect x=\"19\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"20\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"21\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"20\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"0\" width=\"1\" height=\"1\" fill=\"#EADFCB\"/><rect x=\"20\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"0\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"14\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"1\" width=\"1\" height=\"1\" fill=\"#EADFCB\"/><rect x=\"20\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"26\" y=\"1\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"14\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"15\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"19\" y=\"2\" width=\"1\" height=\"1\" fill=\"#EADFCB\"/><rect x=\"20\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"21\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"22\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"23\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"24\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"25\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFDF6\"/><rect x=\"26\" y=\"2\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"12\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"14\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"15\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"16\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"17\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"18\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"19\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"20\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"21\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"22\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"23\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"24\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"25\" y=\"3\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"26\" y=\"3\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"13\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"14\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"15\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"17\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"18\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"19\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"20\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"21\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"22\" y=\"4\" width=\"1\" height=\"1\" fill=\"#F3A9BC\"/><rect x=\"23\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"24\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"25\" y=\"4\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"16\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"17\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"18\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"19\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"20\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"21\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/><rect x=\"22\" y=\"5\" width=\"1\" height=\"1\" fill=\"#3A1B28\"/>"};
+function mochiHTML(room, alt) {
+  return `<div class="mw"><img src="${MOCHI_SRC}" alt="${alt || "Mochi, an orange pixel cat"}"><svg class="acc" viewBox="0 0 45 45" shape-rendering="crispEdges" aria-hidden="true">${ACC[room] || ""}</svg></div>`;
+}
+function setAccessory(el, room) { const s = el.querySelector(".acc"); if (s) s.innerHTML = ACC[room] || ""; }
+
+/* inline pixel decorations (inline SVG, so no image loading is involved) */
+const pixSVG = (cls, w, rows, pal, mirror) => {
+  let r = "";
+  rows.forEach((half, j) => {
+    const full = mirror ? half + half.slice(0, -1).split("").reverse().join("") : half;
+    for (let i = 0; i < full.length; i++) if (pal[full[i]]) r += `<rect x="${i}" y="${j}" width="1" height="1" fill="${pal[full[i]]}"/>`;
+  });
+  const cols = (mirror ? rows[0].length * 2 - 1 : rows[0].length);
+  return `<svg class="${cls}" viewBox="0 0 ${cols} ${rows.length}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+};
+const BOW_SVG = pixSVG("pbow", 13, ["..KKK..", ".KpppKK", "KpwppKd", "KppppKd", ".KpppKK", "..KKK.K"], { K: "#4A2E24", p: "#F6C0A3", w: "#FFFFFF", d: "#E08F58" }, true);
+const HEART_SVG = pixSVG("pheart", 7, ["...K...", "..KpK..", ".KpppK.", "KpwwppK", ".KpppK.", "..KSK.."], { K: "#4A2433", p: "#E2873A", w: "#FFF1C9", S: "#4A2433" }, false);
+(function () {
+  const P = "#F7D9B5", Y = "#F2C28F", L = "#EBB48A", G = "#E7CBA0";
+  let r = "";
+  const put = (x, y, rows, pal) => rows.forEach((row, j) => { for (let i = 0; i < row.length; i++) if (pal[row[i]]) r += `<rect x="${x + i}" y="${y + j}" width="1" height="1" fill="${pal[row[i]]}"/>`; });
+  [[5, 4, P], [30, 20, Y], [14, 33, L]].forEach(([x, y, c]) => put(x, y, ["..C..", ".CCC.", "CCVCC", ".CCC.", "..S.."], { C: c, V: "#FFF1D8", S: G }));
+  [[37, 3], [3, 24], [40, 41], [22, 9]].forEach(([x, y]) => put(x, y, [".N.", "NNN", "NNN", ".S."], { N: Y, S: G }));
+  [[20, 28], [44, 30], [10, 18], [34, 12]].forEach(([x, y]) => put(x, y, ["L"], { L }));
+  const html = `<svg class="bgf" width="100%" height="100%" aria-hidden="true"><defs><pattern id="flw" width="192" height="192" patternUnits="userSpaceOnUse"><g transform="scale(4)" shape-rendering="crispEdges">${r}</g></pattern></defs><rect width="100%" height="100%" fill="url(#flw)"/></svg>`;
+  const add = () => {
+    document.body.insertAdjacentHTML("afterbegin", html);
+    document.querySelectorAll(".stage").forEach(s => s.insertAdjacentHTML("beforeend", `<span class="cb l">${BOW_SVG}</span><span class="cb r">${BOW_SVG}</span>`));
+    document.querySelectorAll(".mast h1").forEach(h => { h.insertAdjacentHTML("afterbegin", `<span class="tb l">${BOW_SVG}</span>`); h.insertAdjacentHTML("beforeend", `<span class="tb">${BOW_SVG}</span>`); });
+  };
+  if (document.body) add(); else document.addEventListener("DOMContentLoaded", add);
+})();
+const REDUCE = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const store = {
+  get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+};
+
+/* ---------------- sound ---------------- */
+const Snd = (() => {
+  let ctx = null, on = store.get("mochi-snd") === "1", wantMusic = false;
+  const api = {};
+  const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+  api.isOn = () => on;
+  api.ctx = () => {
+    if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    return ctx;
+  };
+  api.unlock = () => {
+    const c = api.ctx(); if (!c) return;
+    if (c.state === "suspended") c.resume().then(() => { if (wantMusic && on) music.start(0.4); }).catch(() => {});
+  };
+  ["pointerdown", "keydown"].forEach(ev => window.addEventListener(ev, api.unlock, { capture: true }));
+  const running = () => { const c = api.ctx(); return c && c.state === "running" ? c : null; };
+
+  // animalese: a short, soft pitched blip per letter
+  api.blip = ch => {
+    const c = running(); if (!on || !c || !ch || !/[a-z0-9]/i.test(ch)) return;
+    const idx = ch.toLowerCase().charCodeAt(0) % 26, scale = [0, 2, 4, 7, 9];
+    const note = scale[idx % 5] + 12 * (Math.floor(idx / 5) % 2);
+    const f = 300 * Math.pow(2, note / 12) * (0.98 + Math.random() * 0.04);
+    const t = c.currentTime, o = c.createOscillator(), lp = c.createBiquadFilter(), g = c.createGain();
+    o.type = "triangle"; o.frequency.setValueAtTime(f * 1.06, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.04);
+    lp.type = "lowpass"; lp.frequency.value = 2400;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.07, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+    o.connect(lp); lp.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.09);
+  };
+
+  // a cat-ish "mee-ow": gliding sawtooth through two moving vowel formants
+  api.meow = () => {
+    const c = running(); if (!on || !c) return;
+    const t = c.currentTime, p = 0.94 + Math.random() * 0.14, d = 0.7;
+    const o = c.createOscillator(), vib = c.createOscillator(), vg = c.createGain();
+    o.type = "sawtooth";
+    o.frequency.setValueAtTime(480 * p, t);
+    o.frequency.linearRampToValueAtTime(700 * p, t + 0.1);
+    o.frequency.linearRampToValueAtTime(980 * p, t + 0.26);
+    o.frequency.linearRampToValueAtTime(760 * p, t + 0.46);
+    o.frequency.linearRampToValueAtTime(430 * p, t + d);
+    vib.frequency.value = 6.5; vg.gain.value = 14; vib.connect(vg); vg.connect(o.frequency);
+    const mix = c.createGain(); mix.gain.setValueAtTime(0.0001, t);
+    mix.gain.linearRampToValueAtTime(0.2, t + 0.07); mix.gain.setValueAtTime(0.2, t + 0.4); mix.gain.linearRampToValueAtTime(0.0001, t + d);
+    const f1 = c.createBiquadFilter(), f2 = c.createBiquadFilter(), g1 = c.createGain(), g2 = c.createGain();
+    f1.type = f2.type = "bandpass"; f1.Q.value = 5; f2.Q.value = 7; g1.gain.value = 1.0; g2.gain.value = 0.8;
+    f1.frequency.setValueAtTime(420, t); f1.frequency.linearRampToValueAtTime(760, t + 0.26); f1.frequency.linearRampToValueAtTime(520, t + d);
+    f2.frequency.setValueAtTime(2300, t); f2.frequency.linearRampToValueAtTime(2000, t + 0.22); f2.frequency.linearRampToValueAtTime(1000, t + d);
+    o.connect(f1); o.connect(f2); f1.connect(g1); f2.connect(g2); g1.connect(mix); g2.connect(mix); mix.connect(c.destination);
+    o.start(t); vib.start(t); o.stop(t + d + 0.05); vib.stop(t + d + 0.05);
+  };
+
+  // soft whoosh for transitions, rising or falling
+  api.swoosh = up => {
+    const c = running(); if (!on || !c) return;
+    const t = c.currentTime, len = 0.8, n = c.sampleRate * len, buf = c.createBuffer(1, n, c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    const s = c.createBufferSource(); s.buffer = buf;
+    const bp = c.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = 1.2;
+    bp.frequency.setValueAtTime(up ? 300 : 2400, t); bp.frequency.exponentialRampToValueAtTime(up ? 2400 : 300, t + 0.7);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.07, t + 0.15); g.gain.linearRampToValueAtTime(0.0001, t + len);
+    s.connect(bp); bp.connect(g); g.connect(c.destination); s.start(t);
+  };
+  api.chime = () => {
+    const c = running(); if (!on || !c) return;
+    [0, 0.09].forEach((dt, i) => {
+      const t = c.currentTime + dt, o = c.createOscillator(), g = c.createGain();
+      o.type = "square"; o.frequency.value = i ? 988 : 659;
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.04, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.2);
+    });
+  };
+
+  // light chiptune loop: C Am F G, eight bars, restarts from the top each time
+  const music = (() => {
+    const STEP = 60 / 100 / 2;
+    const chords = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]], bass = [36, 33, 29, 31];
+    const mel = [[76,0,79,0,76,74,72,0],[72,0,76,0,74,0,72,0],[77,0,76,0,72,0,69,0],[74,0,79,0,77,76,74,0],
+                 [76,0,79,0,84,0,79,0],[81,0,79,0,76,0,72,0],[77,0,76,74,72,0,69,0],[74,0,71,0,67,0,0,0]];
+    let timer = null, master = null, next = 0, step = 0;
+    const note = (c, t, m, dur, type, gain) => {
+      const o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.value = hz(m);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(gain, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.05);
+    };
+    const tick = () => {
+      const c = api.ctx(); if (!c || !master) return;
+      while (next < c.currentTime + 0.4) {
+        const bar = Math.floor(step / 8) % 8, s = step % 8, ch = chords[bar % 4];
+        if (s === 0 || s === 4) note(c, next, bass[bar % 4] + (s === 4 ? 7 : 0), STEP * 3.4, "triangle", 0.11);
+        note(c, next, ch[[0, 1, 2, 1, 0, 1, 2, 1][s]] + 12, STEP * 1.5, "square", 0.016);
+        const m = mel[bar][s]; if (m) note(c, next, m, STEP * (s % 2 ? 0.9 : 1.9), "triangle", 0.075);
+        next += STEP; step++;
+      }
+    };
+    const kill = (fade) => {
+      clearInterval(timer); timer = null;
+      if (master) {
+        const c = api.ctx(), m = master; master = null;
+        m.gain.cancelScheduledValues(c.currentTime); m.gain.setValueAtTime(m.gain.value, c.currentTime); m.gain.linearRampToValueAtTime(0.0001, c.currentTime + fade);
+        setTimeout(() => { try { m.disconnect(); } catch (e) {} }, fade * 1000 + 300);
+      }
+    };
+    return {
+      start(fadeIn = 0.4) {
+        wantMusic = true; if (!on) return; const c = running(); if (!c) return;
+        kill(0.05);
+        master = c.createGain(); master.gain.setValueAtTime(0.0001, c.currentTime); master.gain.linearRampToValueAtTime(0.6, c.currentTime + fadeIn); master.connect(c.destination);
+        step = 0; next = c.currentTime + 0.06; tick(); timer = setInterval(tick, 100);
+      },
+      stop(fade = 0.3) { wantMusic = false; kill(fade); }
+    };
+  })();
+  api.music = music;
+  api.set = v => { on = v; store.set("mochi-snd", v ? "1" : "0"); if (!on) music.stop(0.2); else { api.unlock(); music.start(0.4); } };
+  api.bind = btn => {
+    if (!btn) return;
+    const paint = () => { btn.setAttribute("aria-pressed", on); btn.textContent = on ? "sound on" : "sound off"; };
+    paint(); btn.addEventListener("click", () => { api.set(!on); paint(); });
+  };
+  return api;
+})();
+
+/* typed speech with animalese blips; returns {finish()} */
+function typeSay(el, text, done) {
+  clearInterval(el._t);
+  if (REDUCE) { el.textContent = text; if (done) done(); return { finish() {} }; }
+  let i = 0; el.textContent = "";
+  const fin = () => { clearInterval(el._t); el.textContent = text; if (done) { const d = done; done = null; d(); } };
+  el._t = setInterval(() => { i++; el.textContent = text.slice(0, i); Snd.blip(text[i - 1]); if (i >= text.length) fin(); }, 55);
+  return { finish: fin };
+}
+
+/* ---------------- iris transition ---------------- */
+const Iris = (() => {
+  const el = () => document.getElementById("iris");
+  const R0 = () => Math.hypot(innerWidth, innerHeight) / 2 + 24;
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const tween = (ms, fn) => new Promise(res => {
+    const s = performance.now();
+    const f = now => { const k = Math.min(1, (now - s) / ms); fn(ease(k)); k < 1 ? requestAnimationFrame(f) : res(); };
+    requestAnimationFrame(f);
+  });
+  const hole = r => { el().style.background = r <= 0.5 ? "#3A231B" : `radial-gradient(circle at 50% 50%, transparent ${r}px, #3A231B ${r + 1}px)`; };
+  return {
+    async close(ms = 700) {
+      const e = el(); if (!e) return; e.className = ""; e.style.opacity = ""; e.style.pointerEvents = "all";
+      if (REDUCE) { e.style.background = "#3A231B"; e.style.opacity = 0; await tween(220, k => e.style.opacity = k); return; }
+      const r0 = R0(); hole(r0); await tween(ms, k => hole(r0 * (1 - k)));
+    },
+    async open(ms = 800) {
+      const e = el(); if (!e) return; e.className = ""; e.style.pointerEvents = "all";
+      const guard = setTimeout(() => { e.className = "off"; e.style.pointerEvents = "none"; }, ms + 1500);
+      if (REDUCE) { e.style.background = "#3A231B"; await tween(220, k => e.style.opacity = 1 - k); }
+      else { const r0 = R0(); hole(0); await tween(ms, k => hole(r0 * k)); }
+      clearTimeout(guard); e.className = "off"; e.style.pointerEvents = "none";
+    }
+  };
+})();
+// safety net: never leave the page covered by the black overlay
+setTimeout(() => { if (!Transition.isBusy()) { const i = document.getElementById("iris"); if (i && i.className !== "off") { i.className = "off"; i.style.pointerEvents = "none"; } } }, 4500);
+
+const Transition = (() => {
+  let busy = false;
+  const api = {
+    isBusy: () => busy,
+    // black-out, run mid(), reveal; music stops at the start and restarts as the reveal begins
+    async swap(mid) {
+      if (busy) return; busy = true;
+      Snd.swoosh(false); Snd.music.stop(0.25);
+      await Iris.close(700);
+      await mid(); await wait(200);
+      Snd.swoosh(true); Snd.music.start(0.5);
+      await Iris.open(800);
+      busy = false;
+    },
+    // leave this page toward another file
+    async leave(href) {
+      if (busy) return; busy = true; store.set("mochi-in", "1");
+      Snd.swoosh(false); Snd.music.stop(0.25);
+      const bail = setTimeout(async () => { await Iris.open(500); busy = false; }, 3000);
+      await Iris.close(650);
+      location.href = href;
+    },
+    // a fresh page that starts black
+    async arrive() {
+      busy = true;
+      try { await wait(REDUCE ? 50 : 180); Snd.swoosh(true); Snd.music.start(0.5); } catch (e) {}
+      try { await Iris.open(800); } finally { busy = false; }
+    }
+  };
+  document.addEventListener("click", e => {
+    const a = e.target.closest && e.target.closest("a[href]");
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const href = a.getAttribute("href");
+    if (!href || !/\.html$/.test(href)) return;
+    e.preventDefault(); api.leave(href);
+  });
+  return api;
+})();
+
+const MEOWS = ["meow.", "mrrp?", "mew.", "prrrr.", "...meow.", "yes, hello. meow."];
+function wireMochi(el, onSay) {
+  const go = () => {
+    Snd.meow();
+    el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop");
+    setTimeout(() => el.classList.remove("hop"), 900);
+    if (onSay) onSay(MEOWS[Math.floor(Math.random() * MEOWS.length)]);
+  };
+  el.addEventListener("click", e => { e.stopPropagation(); go(); });
+  el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+}
+
+(function () {
+  const K = "#4A2E24";
+  const R = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
+  const W = (x, y, w, h) => `<rect class="w" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+  const roomOf = k => ROOMS.find(r => r.key === k);
+  const nameOf = id => (PRODUCTS.find(p => p.id === id) || {}).name || id;
+  const item = (room, pid, label, inner) => `<g class="deco">${inner}</g>`;
+  const pix = (x, y, rows, pal) => {
+    let o = "";
+    rows.forEach((half, j) => {
+      const full = half + half.slice(0, -1).split("").reverse().join("");
+      for (let i = 0; i < full.length; i++) { const c = pal[full[i]]; if (c) o += R(x + i, y + j, 1, 1, c); }
+    });
+    return o;
+  };
+  const BOW = ["..KKK..", ".KpppKK", "KpwppKd", "KppppKd", ".KpppKK", "..KKK.K"];
+  const bow = (x, y, c = "#F6C0A3", d = "#E08F58") => pix(x, y, BOW, { K, p: c, w: "#fff", d });
+  const px = (x, y, rows, pal) => { let o = ""; rows.forEach((r, j) => { for (let i = 0; i < r.length; i++) { const c = pal[r[i]]; if (c) o += R(x + i, y + j, 1, 1, c); } }); return o; };
+  const LEAF = ["...K...", "..KLK..", ".KLLLK.", "KLLVLLK", ".KLLLK.", "..KSK.."];
+  const heart = (x, y, c = "#E2873A") => px(x, y, LEAF, { K, L: c, V: "#FFF1C9", S: K });
+  const pumpkin = (x, y, c = "#E8802F") => R(x + 4, y, 3, 2, "#7A4A2A") + R(x + 1, y + 2, 9, 1, K) + R(x, y + 3, 11, 5, K) + R(x + 1, y + 8, 9, 1, K) + R(x + 1, y + 3, 9, 5, c) + R(x + 2, y + 2, 7, 1, c) + R(x + 5, y + 3, 1, 5, "#C25F1C") + R(x + 2, y + 4, 1, 3, "#F2A055") + R(x + 8, y + 4, 1, 3, "#C25F1C");
+  const garland = () => { let o = R(0, 3, 204, 1, "#7A4A2A"); const cs = ["#D9622B", "#E9A23B", "#B5502A", "#C98A2B"]; for (let x = 14, i = 0; x < 200; x += 12, i++) o += R(x, 4, 3, 1, "#7A4A2A") + R(x - 1, 5, 5, 3, K) + R(x, 5, 3, 2, cs[i % 4]); return o; };
+  const lace = () => { let o = garland(); for (let x = 0; x < 204; x += 6) o += R(x, 0, 6, 2, "#FFFFFF") + R(x + 1, 2, 4, 1, "#FFFFFF") + R(x + 2, 3, 2, 1, "#FFFFFF"); return o; };
+  const plaque = label => {
+    const w = label.length * 5 + 10;
+    return R(6, 4, w, 13, K) + R(8, 6, w - 4, 9, "#F3E4D8") + `<text class="plq" x="11" y="13.5">${label}</text>`;
+  };
+  let wid = 0;
+  const cloud = (x, y, dist, dur, delay) =>
+    `<g class="cloud" style="--d:${dist}px;animation-duration:${dur}s;animation-delay:-${delay}s"><g transform="translate(${x},${y})">` +
+    R(2, 4, 18, 4, "#fff") + R(5, 1, 8, 4, "#fff") + R(11, 0, 6, 5, "#fff") + `</g></g>`;
+  const window_ = (x, y, w, h) => {
+    const id = "wc" + (wid++);
+    return R(x - 2, y - 2, w + 4, h + 4, K) + R(x, y, w, h, "#B8DBF1") +
+      `<clipPath id="${id}"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath>` +
+      `<g clip-path="url(#${id})">` + cloud(x - 24, y + 3, w + 30, 26, 4) + cloud(x - 24, y + Math.floor(h / 2) + 4, w + 30, 38, 22) + `</g>` +
+      R(x + w / 2 - 1, y, 2, h, K) + R(x, y + h / 2 - 1, w, 2, K);
+  };
+  const G1 = "#98AC83", G2 = "#7C9267";
+
+  function living() {
+    let s = R(0, 0, 204, 122, "#F9E5D8"); s += lace();
+    for (let x = 10; x < 204; x += 24) s += R(x, 20, 2, 100, "#F3E4D7");
+    s += R(0, 122, 204, 2, K) + R(0, 124, 204, 18, "#DEBAA0");
+    for (let x = 20; x < 204; x += 40) s += R(x, 126, 1, 16, "#CFA88A");
+    s += plaque("living room") + window_(140, 16, 44, 42);
+    s += R(74, 20, 30, 24, K) + R(76, 22, 26, 20, "#F3E4D8") + R(83, 29, 12, 9, "#C48C6C") + R(83, 26, 3, 3, "#C48C6C") + R(92, 26, 3, 3, "#C48C6C") + R(86, 32, 1, 2, K) + R(91, 32, 1, 2, K);
+    s += pumpkin(42, 44, "#E8802F") + R(12, 52, 44, 3, "#C0987A") + R(12, 55, 44, 1, K);
+    s += R(24, 127, 150, 9, "#E1C2AA") + R(24, 127, 150, 1, K) + R(24, 135, 150, 1, K) + R(34, 130, 130, 2, "#F3E4D8");
+    // sofa
+    s += R(52, 74, 92, 36, K) + R(54, 76, 88, 32, "#D8AF8F") + R(48, 96, 100, 24, K) + R(50, 98, 96, 20, "#E1C2AA");
+    s += R(44, 90, 12, 32, K) + R(46, 92, 8, 28, "#D8AF8F") + R(140, 90, 12, 32, K) + R(142, 92, 8, 28, "#D8AF8F");
+    s += R(50, 120, 6, 6, K) + R(140, 120, 6, 6, K) + R(96, 98, 2, 20, "#D8AF8F");
+    s += bow(91, 68, "#F6C0A3") + heart(112, 24) + heart(124, 34, "#F7CEB6");
+    // items
+    s += item("living", "candle", nameOf("candle"), R(28, 42, 10, 10, K) + R(29, 43, 8, 9, "#F3E4D8") + R(32, 41, 2, 1, K) + R(32, 37, 2, 4, "#CC966D") + R(31, 39, 4, 2, "#D1A079"));
+    s += item("living", "plant", nameOf("plant"),
+      R(17, 82, 4, 22, G1) + R(22, 74, 4, 30, G2) + R(27, 84, 4, 20, G1) + R(12, 92, 4, 12, G2) + R(32, 90, 4, 14, G1) +
+      R(10, 104, 30, 5, K) + R(12, 105, 26, 3, "#CEA280") + R(13, 109, 24, 17, K) + R(15, 109, 20, 15, "#BB8E75"));
+    s += item("living", "blanket", nameOf("blanket"),
+      R(136, 82, 24, 18, K) + R(138, 84, 20, 14, "#F3E4D8") + R(138, 88, 20, 2, "#D8AF8F") + R(138, 93, 20, 2, "#D8AF8F"));
+    s += item("living", "lamp", nameOf("lamp"),
+      R(174, 67, 16, 3, K) + R(168, 70, 28, 14, K) + R(170, 72, 24, 10, "#F4E9C0") + R(181, 84, 3, 36, K) + R(172, 118, 22, 6, K));
+    return s;
+  }
+
+  function kitchen() {
+    let s = R(0, 0, 204, 122, "#FFF3E0"); s += lace();
+    s += R(0, 64, 204, 26, "#CCDDBB");
+    for (let x = 0; x < 204; x += 12) s += R(x, 64, 1, 26, "#CCD8C0");
+    for (let y = 64; y < 90; y += 13) s += R(0, y, 204, 1, "#CCD8C0");
+    s += R(0, 122, 204, 2, K);
+    for (let y = 0; y < 2; y++) for (let x = 0; x < 204; x += 12) s += R(x, 124 + y * 9, 12, 9, ((x / 12 + y) % 2) ? "#BDCBAE" : "#CCDABE");
+    s += plaque("kitchen") + window_(20, 22, 44, 38);
+    // counter
+    s += R(0, 88, 204, 5, K) + R(0, 88, 204, 3, "#F3E4D8") + R(0, 93, 204, 31, K) + R(2, 95, 200, 27, "#B7C7A6");
+    s += R(66, 95, 2, 27, K) + R(134, 95, 2, 27, K);
+    [58, 72, 126, 140].forEach(x => (s += R(x, 106, 4, 5, "#D1A079")));
+    // items
+    s += item("kitchen", "pan", nameOf("pan"),
+      R(84, 20, 52, 3, K) + R(107, 23, 2, 4, K) +
+      R(102, 26, 12, 2, K) + R(98, 28, 20, 2, K) + R(94, 30, 28, 12, K) + R(98, 42, 20, 2, K) + R(102, 44, 12, 2, K) +
+      R(104, 28, 8, 2, "#6C6672") + R(100, 30, 16, 2, "#6C6672") + R(96, 32, 24, 8, "#6C6672") + R(100, 40, 16, 2, "#6C6672") + R(104, 42, 8, 2, "#6C6672") +
+      R(100, 33, 6, 2, "#9E9892") +
+      R(122, 34, 26, 5, K) + R(122, 35, 24, 3, "#A6826C"));
+    s += item("kitchen", "mug", nameOf("mug"),
+      R(104, 68, 2, 4, "#C7D2BB") + R(108, 65, 2, 5, "#C7D2BB") +
+      R(100, 74, 14, 14, K) + R(102, 76, 10, 10, "#F4DECC") + R(113, 77, 6, 8, K) + R(115, 79, 2, 4, "#CCDDBB"));
+    s += item("kitchen", "kettle", nameOf("kettle"),
+      R(160, 62, 6, 6, K) + R(148, 68, 30, 20, K) + R(150, 70, 26, 16, "#F1D6C0") + R(138, 74, 10, 5, K) + R(178, 70, 9, 16, K) + R(180, 72, 5, 12, "#CCDDBB") + R(152, 72, 3, 10, "#fff"));
+    s += bow(150, 60, "#F6C0A3") + heart(30, 80, "#F7CEB6") + heart(76, 30);
+    return s;
+  }
+
+  function bath() {
+    let s = R(0, 0, 204, 122, "#DCEAF8"); s += lace();
+    s += R(0, 78, 204, 44, "#F3EBE2");
+    for (let x = 0; x < 204; x += 12) s += R(x, 78, 1, 44, "#E6DACE");
+    for (let y = 78; y < 122; y += 11) s += R(0, y, 204, 1, "#E6DACE");
+    s += R(0, 76, 204, 2, "#D4C3B2") + R(0, 122, 204, 2, K);
+    for (let y = 0; y < 2; y++) for (let x = 0; x < 204; x += 12) s += R(x, 124 + y * 9, 12, 9, ((x / 12 + y) % 2) ? "#D3C4B5" : "#EBE2D8");
+    s += plaque("bathroom") + window_(84, 18, 30, 24);
+    // shelf
+    s += R(118, 56, 66, 3, "#C0987A") + R(118, 59, 66, 1, K);
+    // tub
+    s += R(96, 84, 8, 8, K) + R(97, 85, 6, 6, "#DDEDF9") + R(108, 78, 10, 10, K) + R(109, 79, 8, 8, "#DDEDF9") + R(124, 86, 6, 6, K) + R(125, 87, 4, 4, "#DDEDF9");
+    s += R(74, 90, 126, 6, K) + R(76, 91, 122, 3, "#fff") + R(78, 96, 118, 26, K) + R(80, 96, 114, 24, "#F2EBE4");
+    s += R(84, 122, 8, 5, K) + R(86, 122, 4, 3, "#D1A079") + R(180, 122, 8, 5, K) + R(182, 122, 4, 3, "#D1A079");
+    s += R(190, 72, 4, 18, K) + R(184, 72, 10, 4, K);
+    s += item("bath", "soap", nameOf("soap"), R(124, 46, 18, 10, K) + R(126, 48, 14, 6, "#F4DECC") + R(128, 49, 5, 2, "#fff"));
+    s += item("bath", "plant2", nameOf("plant2"),
+      R(162, 34, 3, 13, G1) + R(166, 30, 3, 17, G2) + R(170, 36, 3, 11, G1) + R(157, 40, 4, 7, G2) + R(158, 47, 16, 9, K) + R(160, 49, 12, 7, "#BB8E75"));
+    s += item("bath", "towel", nameOf("towel"),
+      R(6, 34, 50, 3, K) + R(6, 34, 3, 10, K) + R(52, 34, 3, 10, K) + R(12, 37, 38, 38, K) + R(14, 37, 34, 35, "#CBB7A3") +
+      R(14, 48, 34, 3, "#E8DDD2") + R(14, 60, 34, 3, "#E8DDD2") + R(14, 72, 34, 3, "#B7A089"));
+    s += bow(40, 42, "#F6C0A3") + heart(90, 62) + heart(140, 20, "#F7CEB6");
+    return s;
+  }
+
+  function vanity() {
+    let s = R(0, 0, 204, 122, "#F6D8C6"); s += lace();
+    for (let y = 22, r = 0; y < 118; y += 18, r++) for (let x = 10 + (r % 2) * 10; x < 204; x += 20) s += R(x, y, 4, 4, "#F4DECE");
+    s += R(0, 122, 204, 2, K) + R(0, 124, 204, 18, "#E6C4AA");
+    s += R(68, 127, 70, 9, "#F2D8C5") + R(68, 127, 70, 1, K) + R(68, 135, 70, 1, K);
+    s += plaque("vanity");
+    let v = "";
+    v += R(58, 4, 68, 78, K) + R(60, 6, 64, 74, "#D1A079") + R(66, 12, 52, 62, K) + R(68, 14, 48, 58, "#DDEDF9");
+    v += R(74, 20, 12, 2, "#fff") + R(74, 24, 8, 2, "#fff") + R(100, 50, 10, 2, "#fff") + R(106, 54, 6, 2, "#fff");
+    v += R(76, 114, 50, 14, K) + R(78, 116, 46, 10, "#E3BA9B") + R(80, 126, 4, 6, K) + R(118, 126, 4, 6, K);
+    v += R(42, 90, 8, 36, K) + R(44, 90, 4, 34, "#E3BA9B") + R(154, 90, 8, 36, K) + R(156, 90, 4, 34, "#E3BA9B");
+    v += R(64, 90, 76, 22, K) + R(66, 92, 72, 18, "#F1D6C1") + R(98, 99, 8, 4, "#D1A079");
+    v += R(36, 82, 132, 8, K) + R(38, 84, 128, 4, "#F8E9DE");
+    v += R(49, 66, 6, 4, "#DC903A") + R(48, 70, 8, 12, K) + R(49, 71, 6, 10, "#E3BA9B");
+    v += R(90, 66, 4, 4, K) + R(88, 70, 12, 12, K) + R(89, 71, 10, 10, "#B8DBF1");
+    v += R(126, 60, 2, 12, "#D1A079") + R(130, 58, 2, 14, "#E3BA9B") + R(134, 62, 2, 10, "#D1A079") + R(124, 72, 14, 10, K) + R(125, 73, 12, 8, "#fff");
+    v += R(144, 72, 18, 4, K) + R(145, 73, 16, 2, "#DDEDF9") + R(142, 76, 22, 6, K) + R(143, 77, 20, 4, "#D1A079");
+    s += `<g class="deco">${v}</g>`;
+    s += bow(84, -1, "#F6C0A3") + heart(30, 30) + heart(150, 24, "#F7CEB6") + heart(168, 40);
+    return s;
+  }
+
+  function bed() {
+    let s = R(0, 0, 204, 122, "#F3DDDC"); s += lace();
+    for (let y = 26, r = 0; y < 116; y += 16, r++) for (let x = 12 + (r % 2) * 12; x < 204; x += 24) s += R(x, y, 3, 3, "#E1C1A7");
+    s += R(0, 122, 204, 2, K) + R(0, 124, 204, 18, "#DEBAA0");
+    for (let x = 20; x < 204; x += 40) s += R(x, 126, 1, 16, "#CFA88A");
+    s += plaque("bedroom") + window_(140, 16, 44, 42);
+    s += R(70, 18, 34, 28, K) + R(72, 20, 30, 24, "#2E3766") + R(80, 24, 10, 14, "#F4E9C0") + R(84, 24, 8, 14, "#2E3766") + R(94, 27, 2, 2, "#fff") + R(76, 36, 2, 2, "#fff") + R(96, 36, 2, 2, "#fff");
+    s += R(24, 127, 150, 9, "#9FB1E8") + R(24, 127, 150, 1, K) + R(24, 135, 150, 1, K) + R(34, 130, 130, 2, "#C1CCF3");
+    // bed
+    s += R(12, 62, 10, 60, K) + R(14, 64, 6, 56, "#AC8067") + R(124, 94, 8, 28, K) + R(126, 96, 4, 24, "#AC8067");
+    s += R(20, 100, 106, 22, K) + R(22, 102, 102, 18, "#F3E4D8");
+    s += R(46, 88, 80, 30, K) + R(48, 90, 76, 26, "#D8AF8F") + R(48, 98, 76, 3, "#E1C2AA") + R(48, 108, 76, 3, "#E1C2AA");
+    s += R(24, 86, 28, 14, K) + R(26, 88, 24, 10, "#fff");
+    s += R(14, 122, 6, 6, K) + R(124, 122, 6, 6, K);
+    // nightstand + lamp
+    s += R(142, 98, 40, 24, K) + R(144, 100, 36, 20, "#C0987A") + R(144, 109, 36, 2, K) + R(158, 104, 8, 3, "#D1A079") + R(158, 114, 8, 3, "#D1A079");
+    s += item("bed", "bedlamp", "", R(150, 74, 24, 14, K) + R(152, 76, 20, 10, "#F4E9C0") + R(160, 88, 4, 10, K));
+    s += R(168, 90, 10, 8, K) + R(170, 92, 6, 4, "#ABC097");
+    s += R(188, 108, 14, 14, K) + R(190, 110, 10, 10, "#BB8E75") + R(192, 92, 3, 18, "#98AC83") + R(196, 98, 3, 12, "#7C9267");
+    s += bow(10, 56, "#F6C0A3") + bow(70, 84, "#F6C0A3", "#E08F58") + heart(104, 26) + heart(116, 38, "#F7CEB6");
+    return s;
+  }
+
+  function office() {
+    let s = R(0, 0, 204, 122, "#EFE8E1"); s += lace();
+    for (let y = 30; y < 122; y += 24) s += R(0, y, 204, 2, "#CBDEEF");
+    s += R(0, 122, 204, 2, K) + R(0, 124, 204, 18, "#DEBAA0");
+    for (let x = 20; x < 204; x += 40) s += R(x, 126, 1, 16, "#CFA88A");
+    s += plaque("office") + window_(124, 16, 44, 38);
+    s += R(8, 24, 54, 98, K) + R(10, 26, 50, 94, "#AC8067");
+    const cols = ["#D8AF8F", "#ABC097", "#D1A079", "#CBB7A3", "#88ACE2", "#E3BA9B"];
+    [[26, 22], [56, 22], [86, 22]].forEach(([y, h], r) => {
+      s += R(10, y + h, 50, 3, "#85634F");
+      let x = 13;
+      for (let i = 0; i < 8; i++) { const bw = 4 + ((i * 3 + r) % 3) * 2, bh = h - ((i + r) % 3) * 3; s += R(x, y + h - bh, bw, bh, K) + R(x + 1, y + h - bh + 1, bw - 2, bh - 2, cols[(i + r) % cols.length]); x += bw + 1; if (x > 52) break; }
+    });
+    s += R(80, 22, 24, 20, K) + R(82, 24, 20, 16, "#F3E4D8") + R(86, 28, 5, 8, "#D8AF8F") + R(93, 30, 6, 6, "#ABC097");
+    s += R(70, 84, 106, 6, K) + R(72, 85, 102, 3, "#E1C2AA");
+    s += R(74, 90, 6, 32, K) + R(76, 90, 2, 30, "#C0987A") + R(134, 90, 38, 32, K) + R(136, 92, 34, 28, "#C0987A") + R(136, 105, 34, 2, K) + R(150, 98, 6, 3, "#D1A079") + R(150, 112, 6, 3, "#D1A079");
+    s += item("office", "desklamp", "", R(78, 78, 12, 6, K) + R(83, 62, 2, 16, K) + R(76, 56, 18, 8, K) + R(78, 58, 14, 4, "#F4E9C0"));
+    s += R(104, 50, 44, 30, K) + R(106, 52, 40, 22, "#283552") + R(110, 56, 18, 2, "#ABC097") + R(110, 61, 26, 2, "#D1A079") + R(110, 66, 14, 2, "#E3BA9B") + R(122, 74, 8, 8, K) + R(114, 81, 24, 3, K);
+    s += R(100, 82, 32, 3, "#F3E4D8") + R(100, 82, 32, 1, K);
+    s += item("office", "notebook", "", R(152, 78, 16, 6, K) + R(154, 79, 12, 4, "#E3BA9B"));
+    s += R(160, 68, 10, 10, K) + R(162, 70, 6, 6, "#fff") + R(168, 71, 4, 4, K);
+    s += R(84, 108, 40, 14, K) + R(86, 110, 36, 10, "#E1C2AA");
+    s += item("office", "deskplant", "", R(184, 66, 3, 30, "#98AC83") + R(189, 74, 3, 22, "#7C9267") + R(179, 80, 3, 16, "#7C9267") + R(176, 96, 22, 4, K) + R(178, 97, 18, 3, "#CEA280") + R(178, 100, 18, 22, K) + R(180, 100, 14, 20, "#BB8E75"));
+    s += R(30, 127, 90, 9, "#E1C2AA") + R(30, 127, 90, 1, K) + R(30, 135, 90, 1, K);
+    s += bow(127, 56, "#F6C0A3") + heart(60, 52, "#F7CEB6");
+    return s;
+  }
+
+  function closet() {
+    let s = R(0, 0, 204, 122, "#F6E4DE"); s += lace();
+    for (let x = 10; x < 204; x += 24) s += R(x, 20, 2, 100, "#F0D8D2");
+    s += R(0, 122, 204, 2, K) + R(0, 124, 204, 18, "#DEBAA0");
+    for (let x = 20; x < 204; x += 40) s += R(x, 126, 1, 16, "#CFA88A");
+    s += plaque("closet");
+    // full-length mirror
+    s += R(8, 34, 28, 86, K) + R(10, 36, 24, 82, "#C9A085") + R(13, 39, 18, 76, K) + R(14, 40, 16, 74, "#DDEBF8") + R(17, 44, 3, 12, "#fff");
+    s += R(14, 120, 16, 3, K);
+    // shelf with cap, bag
+    s += R(44, 30, 112, 3, K) + R(44, 33, 112, 2, "#C0987A");
+    s += R(52, 18, 22, 12, K) + R(54, 20, 18, 8, "#FFFDF6") + R(62, 24, 12, 4, "#F3C7A9") + R(60, 19, 3, 2, "#F3C7A9");
+    s += R(92, 20, 22, 10, K) + R(94, 22, 18, 8, "#D8AF8F") + R(97, 17, 12, 4, K) + R(99, 18, 8, 2, "#F3E4D8");
+    s += R(130, 22, 18, 8, K) + R(132, 24, 14, 6, "#B8DBF1");
+    // clothes rail
+    s += R(44, 42, 112, 3, K) + R(44, 42, 3, 80, K) + R(153, 42, 3, 80, K) + R(46, 43, 108, 1, "#E8C8A8");
+    const hang = (x, body, trim, len, wd) => R(x + wd / 2 - 1, 38, 2, 4, K) + R(x - 1, 45, wd + 2, 2, K) + R(x, 47, wd, len, K) + R(x + 1, 47, wd - 2, len - 1, body) + R(x + 1, 47, wd - 2, 3, trim);
+    s += hang(52, "#F6CFB7", "#E08F58", 34, 18);
+    s += hang(74, "#FFFDF6", "#E1C2AA", 26, 16);
+    s += hang(94, "#B8DBF1", "#8FB6DA", 30, 16);
+    s += hang(114, "#E4D8CB", "#CBBBAB", 36, 18);
+    s += hang(136, "#D8AF8F", "#C0987A", 28, 14);
+    // shoe rack
+    s += R(164, 76, 36, 3, K) + R(164, 98, 36, 3, K) + R(164, 120, 36, 2, K) + R(164, 76, 3, 46, K) + R(197, 76, 3, 46, K);
+    s += R(170, 90, 12, 8, K) + R(172, 92, 8, 6, "#FFFDF6") + R(184, 92, 10, 6, K) + R(186, 94, 6, 4, "#F3C7A9");
+    s += R(170, 112, 14, 8, K) + R(172, 114, 10, 6, "#D1A079") + R(186, 108, 3, 12, K) + R(187, 110, 1, 10, "#F6CFB7");
+    s += R(188, 112, 8, 8, K) + R(190, 114, 4, 6, "#B8DBF1");
+    s += R(48, 127, 100, 8, "#F3E4D8") + R(48, 127, 100, 1, K) + R(48, 134, 100, 1, K);
+    s += bow(10, 28, "#F6C0A3") + heart(160, 54) + heart(20, 20, "#F7CEB6");
+    return s;
+  }
+  function hall() {
+    let s = R(0, 0, 204, 122, "#F8F1EB"); s += lace();
+    for (let x = 10; x < 204; x += 24) s += R(x, 20, 2, 100, "#F3E7DD");
+    s += R(0, 122, 204, 2, K) + R(0, 124, 204, 18, "#DEBAA0");
+    for (let x = 20; x < 204; x += 40) s += R(x, 126, 1, 16, "#CFA88A");
+    s += R(30, 24, 34, 28, K) + R(32, 26, 30, 24, "#F3E4D8") + R(39, 33, 16, 11, "#E3BA9B");
+    s += R(80, 18, 24, 34, K) + R(82, 20, 20, 30, "#B8DBF1") + R(86, 30, 12, 12, "#F6CFB7");
+    s += R(122, 30, 30, 22, K) + R(124, 32, 26, 18, "#F3E3C2") + R(130, 38, 14, 6, "#D8AF8F");
+    s += R(150, 86, 46, 6, K) + R(152, 88, 42, 2, "#C0987A") + R(154, 92, 4, 30, K) + R(188, 92, 4, 30, K);
+    s += R(164, 70, 18, 16, K) + R(166, 76, 14, 10, "#BB8E75") + R(170, 60, 3, 14, "#98AC83") + R(175, 64, 3, 10, "#7C9267");
+    s += R(40, 118, 70, 8, "#E1C2AA") + R(40, 118, 70, 1, K);
+    s += bow(114, 6, "#F6C0A3") + heart(66, 62) + heart(130, 70, "#F7CEB6");
+    return s;
+  }
+
+  const ORDER = ["living", "kitchen", "bed", "closet", "bath", "vanity", "office"];
+  const LAYOUT = ["living", "kitchen", "bed", "closet", "bath", "vanity", "office", "hall"];
+  const FEET = { living: [98, 118], kitchen: [62, 132], bed: [86, 126], closet: [100, 126], hall: [100, 126], bath: [36, 132], vanity: [92, 128], office: [60, 126] };
+  const fns = { living, kitchen, bed, closet, bath, vanity, office, hall };
+  const spotsFor = cols => {
+    const o = {};
+    LAYOUT.forEach((k, i) => { o[k] = { ox: 4 + (i % cols) * 208, oy: 47 + Math.floor(i / cols) * 146, cx: FEET[k][0], feet: FEET[k][1] }; });
+    return o;
+  };
+
+  function roof(Wd) {
+    const mid = Wd / 2; let s = "";
+    for (let i = 0; i < 5; i++) {
+      const y = 3 + 8 * i, hw = Math.round(mid * (0.21 + 0.18 * i));
+      if (i === 0) s += W(mid - hw - 3, y - 3, 2 * hw + 6, 3);
+      s += W(mid - hw - 3, y, 2 * hw + 6, 8) + R(mid - hw, y, 2 * hw, 8, "#CF6A2E") + R(mid - hw, y + 6, 2 * hw, 2, "#A8451B");
+    }
+    s += R(mid - 14, 24, 28, 18, K) + R(mid - 12, 26, 24, 14, "#F3E4D8") + R(mid - 1, 26, 2, 14, K) + R(mid + 4, 29, 4, 2, "#B8DBF1");
+    return s;
+  }
+  function lights(Wd) {
+    let s = R(4, 42, Wd - 8, 1, K);
+    for (let x = 10, i = 0; x < Wd - 8; x += 14, i++) s += `<rect class="bulb b${i % 3}" x="${x}" y="43" width="3" height="3" fill="${["#CF9C74", "#E3BA9B", "#ABC097"][i % 3]}"/>`;
+    return s;
+  }
+  function houseSVG(cols) {
+    const rows = Math.ceil(LAYOUT.length / cols), Wd = 4 + cols * 208, H = 47 + (rows - 1) * 146 + 142 + 4, S = spotsFor(cols);
+    const svg = `<svg viewBox="0 0 ${Wd} ${H}" shape-rendering="crispEdges" role="group" aria-label="Mochi's home, a cutaway pixel house with seven rooms">` +
+      roof(Wd) + W(0, 43, Wd, H - 43) +
+      LAYOUT.map(k => k === "hall" ? `<g transform="translate(${S[k].ox},${S[k].oy})">${fns[k]()}</g>` : `<a class="roomlink" href="${roomOf(k).page}" data-room="${k}" aria-label="${roomOf(k).label}"><g transform="translate(${S[k].ox},${S[k].oy})">${fns[k]()}</g></a>`).join("") +
+      lights(Wd) + bow(Wd / 2 - 6, 27) + `</svg>`;
+    return { svg, Wd, H, S };
+  }
+
+  window.MochiArt = { fns, W: (k) => `<svg viewBox="0 0 204 142" shape-rendering="crispEdges" role="img" aria-label="Mochi's ${roomOf(k).label}">${fns[k]()}</svg>` };
+
+  function exterior() {
+    const Y = "#CF9C74";
+    let s = R(0, 0, 420, 300, "#F6D2AE") + R(0, 90, 420, 60, "#F8DDBF") + R(0, 150, 420, 64, "#FBE8D2");
+    s += R(340, 26, 28, 28, "#FBE3A8") + R(336, 30, 36, 20, "#FBE3A8") + R(344, 22, 20, 36, "#FBE3A8") + R(346, 30, 16, 16, "#F7EECD");
+    s += cloud(-40, 22, 480, 70, 6) + cloud(-40, 62, 480, 96, 54) + cloud(-40, 104, 480, 120, 84);
+    s += R(0, 196, 420, 20, "#BED1AB") + R(30, 188, 110, 8, "#BED1AB") + R(250, 184, 140, 12, "#BED1AB") + R(290, 178, 60, 6, "#BED1AB");
+    s += R(0, 214, 420, 86, "#AEC795") + R(0, 214, 420, 3, "#98B27E");
+    for (let y = 238; y < 300; y += 22) for (let x = (y % 44 ? 10 : 24); x < 420; x += 48) s += R(x, y, 4, 2, "#98B27E") + R(x + 2, y - 2, 2, 2, "#98B27E");
+    for (let i = 0; i < 9; i++) { const y = 216 + i * 10, hw = 18 + i * 4; s += R(210 - hw, y, 2 * hw, 10, "#EFDBCB") + R(210 - hw, y, 2, 10, "#D3B6A0") + R(208 + hw, y, 2, 10, "#D3B6A0"); }
+    // tree
+    s += R(32, 150, 12, 66, K) + R(34, 150, 8, 64, "#AC8067");
+    [[24, 96, 30], [14, 104, 50], [8, 114, 62], [8, 130, 62], [14, 146, 50]].forEach(([x, y, w], n) => { s += R(x, y, w, n === 0 ? 8 : n === 4 ? 8 : 16, K); });
+    [[26, 98, 26], [16, 106, 46], [10, 116, 58], [10, 132, 58], [16, 148, 46]].forEach(([x, y, w], n) => { s += R(x, y, w, n === 0 ? 4 : n === 4 ? 4 : 12, "#E2873A"); });
+    s += R(20, 112, 4, 4, "#F0A857") + R(34, 122, 4, 4, "#F0A857") + R(48, 136, 4, 4, "#F0A857") + R(18, 140, 4, 4, "#F0A857") + R(44, 108, 4, 4, "#B8432A") + R(24, 130, 4, 4, "#B8432A");
+    // mailbox
+    s += R(358, 198, 4, 22, K) + R(348, 186, 24, 14, K) + R(350, 188, 20, 10, "#D8AF8F") + R(372, 184, 3, 10, Y);
+    // chimney, roof
+    s += R(262, 48, 20, 50, K) + R(264, 50, 16, 46, "#AB7C61") + R(264, 62, 16, 1, "#90664E") + R(264, 74, 16, 1, "#90664E") + R(264, 86, 16, 1, "#90664E");
+    s += [0, 1, 2].map(i => `<rect class="smoke" x="${268 + i * 2}" y="38" width="5" height="5" fill="#fff" style="animation-delay:-${i * 1.3}s"/>`).join("");
+    for (let i = 0; i < 7; i++) {
+      const w = 250 - 30 * i, x = 210 - w / 2, y = 102 - 8 * i;
+      s += R(x, y, w, 8, K) + R(x + 2, y + 1, w - 4, 6, "#CF6A2E") + R(x + 2, y + 5, w - 4, 2, "#A8451B");
+    }
+    s += R(202, 64, 16, 16, K) + R(204, 66, 12, 12, "#B8DBF1") + R(209, 66, 2, 12, K) + R(204, 71, 12, 2, K);
+    // wall
+    s += R(100, 110, 220, 105, K) + R(102, 112, 216, 101, "#F3E3D7");
+    for (let y = 122; y < 213; y += 10) s += R(102, y, 216, 1, "#F0DCCC");
+    for (let x = 108, i = 0; x < 316; x += 14, i++) s += `<rect class="bulb b${i % 3}" x="${x}" y="113" width="3" height="3" fill="${[Y, "#E3BA9B", "#ABC097"][i % 3]}"/>`;
+    for (let x = 102; x < 318; x += 6) s += R(x, 113, 6, 2, "#FFFFFF") + R(x + 1, 115, 4, 1, "#FFFFFF") + R(x + 2, 116, 2, 1, "#FFFFFF");
+    s += bow(204, 41) + heart(60, 60, "#F7CEB6");
+    // windows with shutters and flower boxes
+    [124, 252].forEach(wx => {
+      s += R(wx - 11, 135, 10, 42, K) + R(wx - 9, 137, 6, 38, "#E1C2AA") + R(wx + 45, 135, 10, 42, K) + R(wx + 47, 137, 6, 38, "#E1C2AA");
+      s += window_(wx, 138, 44, 36);
+      s += R(wx - 2, 178, 48, 9, K) + R(wx, 180, 44, 5, "#85634F");
+      [4, 12, 20, 28, 36].forEach((dx, n) => (s += R(wx + dx, 175, 4, 4, ["#E3BA9B", Y, "#fff", "#E3BA9B", Y][n]) + R(wx + dx + 1, 177, 2, 3, "#7C9267")));
+    });
+    // bushes
+    [[94, 196], [296, 196]].forEach(([x, y]) => { s += R(x, y, 38, 22, K) + R(x + 2, y + 2, 34, 18, "#7C9267") + R(x + 6, y + 4, 8, 4, "#98AC83") + R(x + 22, y + 8, 8, 4, "#98AC83") + R(x + 12, y + 12, 4, 4, "#E3BA9B") + R(x + 26, y + 4, 4, 4, Y); });
+    // door
+    s += `<g class="door" id="door" role="button" tabindex="0" aria-label="Open the door to go inside Mochi's house">` +
+      R(186, 140, 48, 82, "rgba(0,0,0,0)") +
+      R(190, 142, 40, 5, K) + R(192, 143, 36, 3, "#E1C2AA") + R(192, 146, 36, 70, K) + R(194, 148, 32, 68, "#AC8067") +
+      R(198, 154, 24, 26, "#8F654D") + R(198, 184, 24, 26, "#8F654D") + R(198, 154, 24, 1, "#BB8F76") + R(198, 184, 24, 1, "#BB8F76") +
+      R(201, 158, 18, 14, K) + R(203, 160, 14, 10, "#F4E9C0") + R(209, 160, 2, 10, K) +
+      R(218, 188, 4, 4, Y) + R(188, 216, 44, 5, K) + R(190, 216, 40, 3, "#D7C3B2") +
+      `<rect class="doorglow" x="189" y="140" width="42" height="76" fill="none" stroke="${Y}" stroke-width="2"/>` +
+      `<g class="arrow">${R(203, 122, 14, 8, K) + R(205, 124, 10, 4, Y) + R(205, 130, 10, 3, K) + R(207, 133, 6, 3, K) + R(209, 136, 2, 2, K) + R(207, 128, 6, 3, Y) + R(209, 131, 2, 2, Y)}</g></g>`;
+
+    // fall extras
+    [[134, 200, "#E8802F"], [160, 206, "#F09A45"], [244, 200, "#E8802F"], [268, 206, "#D9701F"]].forEach(([x, y, c]) => { s += `<g transform="translate(${x},${y}) scale(2)">${pumpkin(0, 0, c)}</g>`; });
+    s += R(14, 214, 30, 8, "#D9701F") + R(18, 210, 22, 6, "#E9A23B") + R(24, 207, 10, 5, "#B8432A");
+    s += R(200, 187, 20, 2, "#7A4A2A") + R(197, 189, 26, 2, "#C25F1C") + R(195, 191, 30, 10, "#C25F1C") + R(197, 201, 26, 2, "#C25F1C") + R(200, 203, 20, 2, "#7A4A2A");
+    s += R(199, 191, 22, 10, "#8F654D") + R(199, 190, 3, 3, "#E9A23B") + R(215, 190, 3, 3, "#B8432A") + R(196, 196, 3, 3, "#E9A23B") + R(221, 196, 3, 3, "#E9A23B") + R(204, 201, 3, 3, "#B8432A") + R(212, 201, 3, 3, "#E9A23B") + R(207, 192, 6, 6, "#F3D8DE") + R(208, 193, 4, 4, "#B8432A");
+    [["#D9622B", 60, 15, 12], ["#E9A23B", 130, 18, 9], ["#B5502A", 190, 12, 14], ["#C98A2B", 260, 16, 10], ["#E2873A", 330, 14, 13], ["#D9622B", 380, 12, 11]].forEach(([c, x, sx, dur], i) => { s += `<g class="fall" style="--sx:${sx * 2}px;animation-duration:${dur}s;animation-delay:-${i * 2.1}s"><g transform="translate(${x},0)">${R(0, 1, 5, 3, K) + R(1, 0, 3, 5, K) + R(1, 1, 3, 3, c)}</g></g>`; });
+    s += R(196, 226, 28, 7, K) + R(198, 227, 24, 5, "#D8AF8F");
+    return s;
+  }
+
+  // ---- behaviour (home page only) ----
+  const scene = document.getElementById("scene");
+  if (!scene) return;
+  const reduce = REDUCE;
+  const inside0 = store.get("mochi-in") === "1";
+  let mode = inside0 ? "inside" : "outside";
+  document.body.classList.toggle("intro", mode === "outside");
+  scene.innerHTML = `<div id="house"></div><div class="mochi" id="mochi" role="button" tabindex="0" aria-label="Pet Mochi">${mochiHTML("living")}</div>`;
+  const house = document.getElementById("house"), mochi = document.getElementById("mochi");
+  const sayEl = document.getElementById("say"), nextEl = document.getElementById("next"), hintEl = document.getElementById("hint"), bubble = document.getElementById("bubble");
+  document.getElementById("disc").textContent = DISCLOSURE;
+  const nav = document.getElementById("rooms");
+  nav.innerHTML = ROOMS.map(r => `<a class="rbtn" data-room="${r.key}" href="${r.page}">${HEART_SVG}${r.label}</a>`).join("");
+  Snd.bind(document.getElementById("snd"));
+
+  let here = "living", cur = { cols: 0, mode: "" }, speech = null;
+  const say = (t, done) => { speech = typeSay(sayEl, t, done); };
+  function placeOutside() {
+    mochi.style.width = (45 / 420 * 100) + "%";
+    mochi.style.left = ((148 - 22) / 420 * 100) + "%";
+    mochi.style.top = ((240 - 45) / 300 * 100) + "%";
+    setAccessory(mochi, "living");
+  }
+  function place(key, instant) {
+    const s = cur.S[key];
+    mochi.style.width = (45 / cur.Wd * 100) + "%";
+    mochi.style.left = ((s.ox + s.cx - 22) / cur.Wd * 100) + "%";
+    mochi.style.top = ((s.oy + s.feet - 45) / cur.H * 100) + "%";
+    setAccessory(mochi, key);
+    if (key !== here && !instant && !reduce) {
+      mochi.classList.remove("hop"); void mochi.offsetWidth; mochi.classList.add("hop");
+      setTimeout(() => mochi.classList.remove("hop"), 900);
+    }
+    here = key;
+  }
+  function go(key, line, instant) { if (mode !== "inside") return; const moved = key !== here; place(key, instant); if (line && moved) say(line); }
+  function build() {
+    if (mode === "outside") {
+      if (cur.mode === "outside") return;
+      cur = { cols: 0, mode: "outside" };
+      house.innerHTML = `<svg viewBox="0 0 420 300" shape-rendering="crispEdges" role="img" aria-label="The front of Mochi's house, with a door in the middle">${exterior()}</svg>`;
+      placeOutside();
+      document.getElementById("door").addEventListener("click", enter);
+      document.getElementById("door").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); enter(); } });
+      return;
+    }
+    const cols = window.innerWidth < 620 ? 2 : 4;
+    if (cols === cur.cols && cur.mode === "inside") return;
+    const h = houseSVG(cols); cur = { cols, mode: "inside", ...h };
+    house.innerHTML = h.svg;
+    place(here, true);
+  }
+  build();
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(build, 150); });
+
+  const onHover = e => { const a = e.target.closest && e.target.closest(".roomlink"); if (a) go(a.dataset.room, roomOf(a.dataset.room).blurb); };
+  scene.addEventListener("mouseover", onHover); scene.addEventListener("focusin", onHover);
+  wireMochi(mochi, t => { if (mode === "inside") say(t); else { speech && speech.finish && 0; sayEl.textContent = t; } });
+
+  // ---- intro: tap to talk, then the door ----
+  const LINES = ["Meow! It's Mochi!", "Welcome to my house!"];
+  let li = -1, typing = false, ready = false;
+  function startIntro() {
+    bubble.classList.add("clickable");
+    setTimeout(advance, 450);
+  }
+  function advance() {
+    if (mode !== "outside" || Transition.isBusy()) return;
+    if (typing) { speech.finish(); return; }
+    if (li >= LINES.length - 1) return;
+    li++; nextEl.hidden = true; hintEl.hidden = true;
+    if (li === 0) { Snd.unlock(); Snd.music.start(0.6); setTimeout(() => Snd.meow(), 120); }
+    typing = true;
+    say(LINES[li], () => {
+      typing = false;
+      if (li >= LINES.length - 1) { ready = true; hintEl.hidden = false; bubble.classList.remove("clickable"); document.getElementById("door").classList.add("pulse"); }
+      else nextEl.hidden = false;
+    });
+  }
+  async function enter() {
+    if (mode !== "outside" || Transition.isBusy()) return;
+    Snd.unlock(); Snd.chime();
+    if (typing && speech) speech.finish();
+    await Transition.swap(async () => {
+      mode = "inside"; store.set("mochi-in", "1");
+      document.body.classList.remove("intro");
+      hintEl.hidden = true; nextEl.hidden = true; bubble.classList.remove("clickable");
+      here = "living"; build();
+      sayEl.textContent = "";
+    });
+    say("welcome in. sit anywhere. rent is due, so yes, the links are affiliate.");
+  }
+  bubble.addEventListener("click", advance);
+  bubble.addEventListener("keydown", e => { if (mode === "outside" && (e.key === "Enter" || e.key === " ") && e.target === bubble) { e.preventDefault(); advance(); } });
+
+  if (mode === "outside") {
+    bubble.tabIndex = 0; bubble.setAttribute("role", "button");
+    startIntro();
+  } else {
+    sayEl.textContent = "";
+    Transition.arrive().then(() => say("welcome back. the couch missed you."));
+  }
+})();
+
+</script>
+
+</body></html>
